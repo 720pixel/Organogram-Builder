@@ -1,0 +1,31 @@
+{
+  "name": "organogram-builder",
+  "version": "1.0.0",
+  "description": "Free, open-source organogram builder. Build org charts in your browser, import from Excel, export to PDF / Excel / PowerPoint. No sign-up, no servers — your data stays on your device.",
+  "keywords": [
+    "organogram",
+    "org-chart",
+    "organization-chart",
+    "org-chart-builder",
+    "free",
+    "excel-to-org-chart",
+    "diagram",
+    "offline"
+  ],
+  "homepage": "https://orgbuilder.720p.red",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "start": "node serve.js",
+    "dev": "node serve.js"
+  },
+  "bin": {
+    "organogram-builder": "serve.js"
+  },
+  "files": [
+    "index.html",
+    "favicon.svg",
+    "serve.js",
+    "assets/"
+  ]
+}

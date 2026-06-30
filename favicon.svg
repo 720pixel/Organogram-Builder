@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="Organogram Builder">
+  <rect width="48" height="48" rx="11" fill="#0B1224"/>
+  <circle cx="24" cy="12.5" r="4.6" fill="#E8B33C"/>
+  <circle cx="12.5" cy="34" r="4.6" fill="#3DD6C3"/>
+  <circle cx="35.5" cy="34" r="4.6" fill="#E0483E"/>
+  <path d="M24 17.4v6.1M12.5 29.4V25h23v4.4" fill="none" stroke="#9AA6C0" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

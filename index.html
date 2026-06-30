@@ -1,0 +1,2278 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Free Organogram Builder — make org charts in your browser</title>
+<meta name="description" content="A free, open-source organogram builder. Create organizational charts, import from Excel, export to PDF, Excel, CSV and PowerPoint. Works fully in your browser — no sign-up, no servers, your data stays on your device.">
+<meta name="theme-color" content="#070B16">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta property="og:title" content="Free Organogram Builder">
+<meta property="og:description" content="Build org charts in your browser. Import from Excel, export to PDF / Excel / PowerPoint. Open-source and private by default.">
+<meta property="og:type" content="website">
+<meta name="color-scheme" content="dark light">
+<link rel="canonical" href="https://orgbuilder.720p.red/">
+<meta name="keywords" content="organogram builder, org chart maker, organizational chart, free org chart, org chart generator, excel to org chart, organization chart software, hierarchy chart, company structure chart, org chart online">
+<meta name="author" content="Organogram Builder">
+<meta property="og:url" content="https://orgbuilder.720p.red/">
+<meta property="og:site_name" content="Organogram Builder">
+<meta property="og:image" content="https://orgbuilder.720p.red/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Free Organogram Builder">
+<meta name="twitter:description" content="Build org charts in your browser. Import from Excel; export to PDF, Excel, PowerPoint. Open-source, private by default.">
+<meta name="twitter:image" content="https://orgbuilder.720p.red/og.png">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"WebApplication","name":"Organogram Builder","alternateName":"Free Organogram Builder","url":"https://orgbuilder.720p.red/","applicationCategory":"BusinessApplication","operatingSystem":"Any (web browser)","browserRequirements":"Requires JavaScript","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"isAccessibleForFree":true,"license":"https://opensource.org/licenses/MIT","description":"A free, open-source organogram builder. Create organizational charts, import from Excel or CSV, and export to PDF, Excel, CSV and PowerPoint. Works entirely in your browser.","screenshot":"https://orgbuilder.720p.red/og.png","featureList":["Import org charts from Excel or CSV","Export to PDF, Excel, CSV and PowerPoint","Top-down, horizontal and inverted layouts","Photo org charts","Starter templates for company, non-profit, hospital, HR and school","Works offline — data stays in your browser"]},
+{"@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Is Organogram Builder free?","acceptedAnswer":{"@type":"Answer","text":"Yes. It is completely free and open-source under the MIT license, with no sign-up or account."}},
+{"@type":"Question","name":"Can I make an org chart from an Excel spreadsheet?","acceptedAnswer":{"@type":"Answer","text":"Yes. Import an .xlsx or .csv file with Name and Parent columns and the organization chart is generated automatically."}},
+{"@type":"Question","name":"Where is my data stored?","acceptedAnswer":{"@type":"Answer","text":"Everything stays in your own browser. There is no server and nothing is uploaded. You can also save to a local database file on your computer."}},
+{"@type":"Question","name":"Can I export the org chart?","acceptedAnswer":{"@type":"Answer","text":"Yes. You can export to PDF, Excel, CSV and a ready-to-present PowerPoint deck."}}
+]}
+]}
+</script>
+<style>
+/* ============ THEME TOKENS ============ */
+:root{
+  --gold:#E8B33C; --crimson:#E0483E; --cyan:#3DD6C3; --violet:#8B7CF6; --green:#4CC272;
+  --font-ui:-apple-system,"SF Pro Display","Segoe UI Variable","Segoe UI",Roboto,"Helvetica Neue",sans-serif;
+  --font-mono:"SF Mono","Cascadia Code","JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --r-lg:18px; --r-md:13px; --r-sm:9px;
+  --speed:.32s; --ease:cubic-bezier(.22,1,.36,1);
+}
+html[data-theme="dark"]{
+  --bg:#070B16; --bg2:#0B1224;
+  --ink:#EDF1FA; --ink2:#9AA6C0; --ink3:#5B6680;
+  --card:rgba(17,24,44,.72); --card-solid:#101729; --card-edge:rgba(255,255,255,.09);
+  --card-hover:rgba(28,38,66,.85);
+  --glass:rgba(10,15,30,.62); --glass-edge:rgba(255,255,255,.08);
+  --edge-line:rgba(140,160,210,.34);
+  --shadow:0 10px 34px rgba(0,0,0,.45);
+  --chip:rgba(255,255,255,.06);
+  --grid-dot:rgba(160,180,230,.10);
+  --blob-a:rgba(224,72,62,.20); --blob-b:rgba(61,214,195,.13); --blob-c:rgba(139,124,246,.16); --blob-d:rgba(232,179,60,.12);
+  --input:rgba(255,255,255,.05);
+}
+html[data-theme="light"]{
+  --bg:#EEF1F8; --bg2:#E5EAF5;
+  --ink:#141A2C; --ink2:#4C5670; --ink3:#8A92A8;
+  --card:rgba(255,255,255,.82); --card-solid:#FFFFFF; --card-edge:rgba(20,26,44,.10);
+  --card-hover:rgba(255,255,255,.96);
+  --glass:rgba(255,255,255,.66); --glass-edge:rgba(20,26,44,.10);
+  --edge-line:rgba(70,90,140,.38);
+  --shadow:0 10px 30px rgba(30,40,80,.14);
+  --chip:rgba(20,26,44,.05);
+  --grid-dot:rgba(40,60,120,.13);
+  --blob-a:rgba(224,72,62,.16); --blob-b:rgba(20,170,150,.13); --blob-c:rgba(120,100,250,.13); --blob-d:rgba(230,170,40,.18);
+  --input:rgba(20,26,44,.05);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+.seo-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+body{font-family:var(--font-ui);background:var(--bg);color:var(--ink);transition:background .4s}
+
+/* ============ LIVING BACKDROP ============ */
+#backdrop{position:fixed;inset:0;z-index:0;overflow:hidden;background:radial-gradient(120% 90% at 50% 0%,var(--bg2),var(--bg))}
+.blob{position:absolute;width:60vmax;height:60vmax;border-radius:50%;filter:blur(70px);will-change:transform;opacity:1}
+.blob.a{background:radial-gradient(circle at 35% 35%,var(--blob-a),transparent 62%);top:-22vmax;left:-14vmax;animation:driftA 26s ease-in-out infinite alternate}
+.blob.b{background:radial-gradient(circle at 60% 50%,var(--blob-b),transparent 60%);bottom:-26vmax;right:-12vmax;animation:driftB 31s ease-in-out infinite alternate}
+.blob.c{background:radial-gradient(circle at 50% 50%,var(--blob-c),transparent 60%);top:24%;left:34%;animation:driftC 38s ease-in-out infinite alternate}
+.blob.d{background:radial-gradient(circle at 50% 50%,var(--blob-d),transparent 64%);top:-10vmax;right:6vmax;animation:driftB 44s ease-in-out infinite alternate-reverse}
+@keyframes driftA{from{transform:translate(0,0) rotate(0deg) scale(1)}to{transform:translate(11vmax,7vmax) rotate(38deg) scale(1.18)}}
+@keyframes driftB{from{transform:translate(0,0) scale(1)}to{transform:translate(-9vmax,-8vmax) scale(1.22)}}
+@keyframes driftC{from{transform:translate(0,0) scale(.9)}to{transform:translate(7vmax,-9vmax) scale(1.12)}}
+#dotgrid{position:absolute;inset:-200px;background-image:radial-gradient(var(--grid-dot) 1.2px,transparent 1.4px);background-size:30px 30px}
+@media (prefers-reduced-motion:reduce){.blob{animation:none!important}}
+
+/* ============ CANVAS / WORLD ============ */
+#viewport{position:fixed;inset:0;z-index:1;cursor:grab;touch-action:none;overscroll-behavior:none}
+#viewport.panning{cursor:grabbing}
+#world{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
+#edges{position:absolute;left:0;top:0;overflow:visible;pointer-events:none}
+#edges path{fill:none;stroke:var(--edge-line);stroke-width:2;transition:stroke .3s,opacity .3s}
+#edges path.lit{stroke-width:2.6;stroke-dasharray:7 7;animation:flow 1.1s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-28}}
+#edges path.dim{opacity:.16}
+
+/* ============ NODES ============ */
+.node{position:absolute;width:262px;border-radius:var(--r-lg);background:var(--card);
+  border:1px solid var(--card-edge);box-shadow:var(--shadow);
+  backdrop-filter:blur(14px) saturate(1.3);-webkit-backdrop-filter:blur(14px) saturate(1.3);
+  transition:left var(--speed) var(--ease),top var(--speed) var(--ease),
+    opacity var(--speed) ease,box-shadow .25s,border-color .25s,background .25s,transform .25s;
+  user-select:none;-webkit-user-select:none}
+.node::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:3.5px;border-radius:4px;background:var(--ac)}
+.node:hover{background:var(--card-hover);border-color:color-mix(in srgb,var(--ac) 55%,transparent);z-index:30}
+.node.entering{opacity:0;transform:scale(.86)}
+.node.flash{animation:flash 1.6s ease}
+@keyframes flash{0%,60%{box-shadow:0 0 0 3px var(--ac),0 14px 44px color-mix(in srgb,var(--ac) 45%,transparent)}100%{box-shadow:var(--shadow)}}
+.node.t-organization{--ac:var(--gold)} .node.t-division{--ac:var(--crimson)} .node.t-department{--ac:var(--cyan)}
+.node.t-team{--ac:var(--violet)} .node.t-unit{--ac:var(--green)}
+.node.search-dim{opacity:.25}
+.node.connect-target{cursor:crosshair;border-style:dashed}
+.node.connect-source{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold)}
+
+.n-main{display:flex;align-items:center;gap:11px;padding:12px 14px 12px 17px;cursor:default}
+.n-logo{width:42px;height:42px;border-radius:11px;flex:0 0 auto;object-fit:contain;background:rgba(255,255,255,.9);padding:3px;border:1px solid var(--card-edge)}
+.n-logo.ph{display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:700;font-size:15px;color:#fff;background:linear-gradient(140deg,color-mix(in srgb,var(--ac) 88%,#000 6%),color-mix(in srgb,var(--ac) 55%,#000 35%))}
+.n-text{min-width:0;flex:1}
+.n-kicker{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.n-type{font-size:9.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ac)}
+.n-code{font-family:var(--font-mono);font-size:10px;font-weight:600;color:var(--ink2);background:var(--chip);border:1px solid var(--card-edge);padding:1px 6px;border-radius:6px}
+.n-name{font-size:14.5px;font-weight:650;letter-spacing:-.01em;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.n-note{font-size:10.5px;color:var(--ink3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.n-toggle{position:absolute;left:50%;bottom:-14px;transform:translateX(-50%);min-width:28px;height:28px;padding:0 7px;
+  border-radius:99px;border:1px solid var(--card-edge);background:var(--card-solid);color:var(--ink);
+  font-family:var(--font-mono);font-size:11px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:3px;
+  box-shadow:0 3px 10px rgba(0,0,0,.25);transition:transform .2s,background .2s;z-index:5}
+.n-toggle:hover{transform:translateX(-50%) scale(1.12);background:var(--ac);color:#fff;border-color:transparent}
+.n-toggle .chev{font-size:9px;transition:transform .3s}
+.n-toggle.open .chev{transform:rotate(180deg)}
+
+.n-actions{position:absolute;left:50%;top:-16px;transform:translateX(-50%) translateY(-4px);display:flex;gap:4px;
+  background:var(--card-solid);border:1px solid var(--card-edge);border-radius:99px;padding:3px;box-shadow:0 6px 18px rgba(0,0,0,.3);
+  opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;z-index:6}
+.node:hover .n-actions,.node:focus-within .n-actions{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+@media (hover:none){.n-actions{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}}
+.n-actions button{width:27px;height:27px;border:none;border-radius:99px;background:transparent;color:var(--ink2);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s}
+.n-actions button:hover{background:var(--chip);color:var(--ink)}
+.n-actions button.danger:hover{background:rgba(224,72,62,.16);color:var(--crimson)}
+.n-actions .a-add{width:auto;padding:0 10px;font-size:10.5px;font-weight:800;letter-spacing:.02em;white-space:nowrap}
+.node.lvl-hit{border-color:color-mix(in srgb,var(--ac) 70%,transparent);box-shadow:0 0 0 2px color-mix(in srgb,var(--ac) 45%,transparent),var(--shadow)}
+
+/* lead cards */
+.cmd-card{position:absolute;left:54%;bottom:calc(100% + 18px);display:flex;align-items:center;gap:8px;padding:6px 12px 6px 7px;border-radius:99px;background:var(--card-solid);border:1px solid color-mix(in srgb,var(--gold) 45%,var(--card-edge));box-shadow:var(--shadow);white-space:nowrap;z-index:4;animation:pop .25s var(--ease)}
+.cmd-card::before{content:"";position:absolute;left:20px;top:100%;height:15px;border-left:2px dashed var(--gold);opacity:.7}
+.cmd-av{width:30px;height:30px;border-radius:99px;object-fit:cover;border:1.5px solid var(--gold);background:#fff}
+.cmd-av.ph{display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--gold),#A8762A);color:#fff;font:700 12px var(--font-mono);border:none}
+.cmd-rank{font-size:8.5px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;color:var(--gold);line-height:1.1}
+.cmd-name{font-size:12px;font-weight:680;line-height:1.15}
+.cmdrow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:9px}
+
+/* ============ TOP BAR ============ */
+#topbar{position:fixed;top:14px;left:14px;right:14px;z-index:50;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:9px 12px;border-radius:20px;background:var(--glass);border:1px solid var(--glass-edge);
+  backdrop-filter:blur(22px) saturate(1.5);-webkit-backdrop-filter:blur(22px) saturate(1.5);box-shadow:var(--shadow);
+  transition:opacity .3s,transform .3s}
+#brand{display:flex;align-items:center;gap:9px;padding-right:6px}
+#brand img{width:34px;height:34px;object-fit:contain}
+#brand .t1{font-size:14.5px;font-weight:760;letter-spacing:-.01em;line-height:1.05}
+#brand .t2{font-size:9px;font-weight:700;letter-spacing:.22em;color:var(--ink3);text-transform:uppercase}
+#searchwrap{position:relative;flex:1 1 200px;max-width:430px;min-width:160px}
+#search{width:100%;height:36px;padding:0 34px 0 34px;border-radius:12px;border:1px solid var(--glass-edge);
+  background:var(--input);color:var(--ink);font:500 13px var(--font-ui);outline:none;transition:border-color .2s,background .2s}
+#search:focus{border-color:var(--cyan);background:var(--card-solid)}
+#searchwrap .sicon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--ink3);font-size:13px;pointer-events:none}
+#searchwrap .skey{position:absolute;right:9px;top:50%;transform:translateY(-50%);font:600 9.5px var(--font-mono);color:var(--ink3);border:1px solid var(--glass-edge);border-radius:5px;padding:2px 5px}
+#results{position:absolute;top:42px;left:0;right:0;max-height:320px;overflow:auto;border-radius:14px;background:var(--card-solid);
+  border:1px solid var(--card-edge);box-shadow:var(--shadow);display:none;z-index:60}
+#results.open{display:block}
+.r-item{display:flex;align-items:center;gap:9px;padding:9px 12px;cursor:pointer;border-bottom:1px solid var(--card-edge)}
+.r-item:last-child{border-bottom:none}
+.r-item:hover,.r-item.sel{background:var(--chip)}
+.r-dot{width:8px;height:8px;border-radius:99px;flex:0 0 auto}
+.r-name{font-size:12.5px;font-weight:600;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.r-name small{color:var(--ink3);font-weight:500}
+.r-type{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+.r-empty{padding:14px;text-align:center;color:var(--ink3);font-size:12px}
+
+#stats{display:flex;gap:6px;flex-wrap:wrap}
+.stat{display:flex;align-items:center;gap:6px;padding:5px 10px;border-radius:99px;background:var(--chip);border:1px solid var(--glass-edge);font-size:11px;font-weight:600;color:var(--ink2);white-space:nowrap}
+.stat b{font-family:var(--font-mono);font-size:12px;color:var(--ink)}
+.stat .dot{width:7px;height:7px;border-radius:99px}
+.stat{cursor:pointer;transition:border-color .15s,background .15s,transform .1s}
+.stat:active{transform:scale(.94)}
+.stat.active{border-color:var(--ink2);background:var(--card-solid);color:var(--ink)}
+
+#actions{display:flex;gap:6px;margin-left:auto;align-items:center}
+.tbtn{height:34px;min-width:34px;padding:0 11px;border-radius:11px;border:1px solid var(--glass-edge);background:var(--input);
+  color:var(--ink);font:600 12px var(--font-ui);cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .15s,border-color .15s,transform .1s}
+.tbtn:hover{background:var(--chip);border-color:var(--ink3)}
+.tbtn:active{transform:scale(.95)}
+.tbtn.on{border-color:var(--gold);color:var(--gold);background:var(--chip)}
+#saveStatus{gap:7px;font-size:11px;font-weight:700}
+#saveStatus .sdot{width:8px;height:8px;border-radius:99px;background:var(--ink3);transition:background .3s}
+#saveStatus[data-state="linked"] .sdot{background:var(--green);box-shadow:0 0 9px var(--green)}
+#saveStatus[data-state="reconnect"] .sdot{background:var(--gold);box-shadow:0 0 9px var(--gold)}
+#saveStatus[data-state="blocked"] .sdot{background:var(--crimson);box-shadow:0 0 9px var(--crimson)}
+#saveStatus.pulse .sdot{animation:savepulse .55s ease}
+@keyframes savepulse{0%{transform:scale(1)}45%{transform:scale(1.9)}100%{transform:scale(1)}}
+@media (max-width:640px){#saveStatus .stext{display:none}}
+.tbtn.icononly{padding:0;justify-content:center;font-size:14px}
+.menu-wrap{position:relative}
+.menu{position:absolute;top:40px;right:0;min-width:185px;border-radius:14px;background:var(--card-solid);border:1px solid var(--card-edge);
+  box-shadow:var(--shadow);padding:5px;display:none;z-index:70}
+.menu.open{display:block}
+.menu button{display:flex;align-items:center;gap:9px;width:100%;padding:9px 11px;border:none;background:transparent;color:var(--ink);
+  font:550 12.5px var(--font-ui);border-radius:9px;cursor:pointer;text-align:left}
+.menu button:hover{background:var(--chip)}
+.menu .sep{height:1px;background:var(--card-edge);margin:4px 6px}
+
+/* ============ ZOOM DOCK ============ */
+#dock{position:fixed;right:16px;bottom:16px;z-index:50;display:flex;flex-direction:column;gap:5px;padding:6px;border-radius:16px;
+  background:var(--glass);border:1px solid var(--glass-edge);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:var(--shadow);transition:opacity .3s}
+#dock button{width:36px;height:36px;border:none;border-radius:11px;background:transparent;color:var(--ink);font:700 15px var(--font-ui);cursor:pointer;transition:background .15s}
+#dock button:hover{background:var(--chip)}
+#zoomPct{font:700 9.5px var(--font-mono);color:var(--ink3);text-align:center;padding:2px 0}
+
+#connectBanner{position:fixed;top:84px;left:50%;transform:translateX(-50%) translateY(-8px);z-index:80;display:none;align-items:center;gap:10px;
+  padding:9px 16px;border-radius:99px;background:var(--card-solid);border:1px solid var(--gold);box-shadow:0 8px 30px rgba(232,179,60,.25);
+  font-size:12.5px;font-weight:600;opacity:0;transition:opacity .25s,transform .25s}
+#connectBanner.on{display:flex;opacity:1;transform:translateX(-50%) translateY(0)}
+#connectBanner button{border:none;background:var(--chip);border-radius:99px;padding:4px 11px;color:var(--ink);font:600 11px var(--font-ui);cursor:pointer}
+
+/* ============ MODAL ============ */
+#overlay{position:fixed;inset:0;z-index:100;background:rgba(4,8,18,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  display:none;align-items:center;justify-content:center;padding:16px}
+#overlay.open{display:flex}
+#levelsOverlay{position:fixed;inset:0;z-index:110;background:rgba(4,8,18,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:16px}
+#levelsOverlay.open{display:flex}
+#tplOverlay{position:fixed;inset:0;z-index:108;background:rgba(4,8,18,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:18px}
+#tplOverlay.open{display:flex}
+#tplOverlay .modal{width:min(940px,100%)}
+.tpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:11px;margin-top:4px}
+.tpl-card{border:1px solid var(--card-edge);background:var(--input);border-radius:14px;padding:0;cursor:pointer;overflow:hidden;text-align:left;transition:border-color .15s,background .15s,transform .1s}
+.tpl-card:hover{border-color:color-mix(in srgb,var(--cyan) 55%,transparent);background:var(--card-hover);transform:translateY(-2px)}
+.tpl-card:active{transform:scale(.98)}
+.tpl-thumb{height:92px;display:flex;align-items:center;justify-content:center;color:var(--ink3);background:color-mix(in srgb,var(--ink) 5%,transparent)}
+.tpl-thumb svg{width:92px;height:64px}
+.tpl-card.feat .tpl-thumb{color:var(--gold);background:color-mix(in srgb,var(--gold) 9%,transparent)}
+.tpl-name{font:650 11.5px var(--font-ui);padding:9px 11px;color:var(--ink);border-top:1px solid var(--card-edge)}
+#ctxMenu{position:fixed;z-index:95;min-width:186px;max-width:240px;border-radius:12px;background:var(--card-solid);border:1px solid var(--card-edge);box-shadow:var(--shadow);padding:5px;display:none}
+#ctxMenu.open{display:block;animation:pop .14s var(--ease)}
+#ctxMenu button{display:flex;align-items:center;gap:9px;width:100%;padding:8px 11px;border:none;background:transparent;color:var(--ink);font:550 12.5px var(--font-ui);border-radius:8px;cursor:pointer;text-align:left;white-space:nowrap}
+#ctxMenu button:hover{background:var(--chip)}
+#ctxMenu button.danger:hover{background:rgba(224,72,62,.16);color:var(--crimson)}
+#ctxMenu .sep{height:1px;background:var(--card-edge);margin:4px 6px}
+#ctxMenu .ctx-head{font:700 9.5px var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);padding:5px 11px 3px;overflow:hidden;text-overflow:ellipsis}
+.modal{width:min(460px,100%);max-height:92vh;overflow:auto;border-radius:22px;background:var(--card-solid);border:1px solid var(--card-edge);
+  box-shadow:0 30px 80px rgba(0,0,0,.5);padding:22px;animation:pop .28s var(--ease)}
+@keyframes pop{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+.m-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.m-title{font-size:16.5px;font-weight:740;letter-spacing:-.01em}
+.m-sub{font-size:11px;color:var(--ink3);margin-top:2px}
+.m-x{width:30px;height:30px;border:none;border-radius:99px;background:var(--chip);color:var(--ink2);font-size:13px;cursor:pointer}
+.field{margin-bottom:13px}
+.field label{display:block;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin-bottom:6px}
+.field input[type=text],.field select,.field textarea{width:100%;padding:10px 12px;border-radius:11px;border:1px solid var(--card-edge);
+  background:var(--input);color:var(--ink);font:500 13.5px var(--font-ui);outline:none;transition:border-color .2s}
+.field textarea{resize:vertical;min-height:54px}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--cyan)}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.typegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.typegrid button{padding:8px 4px;border-radius:10px;border:1.5px solid var(--card-edge);background:var(--input);color:var(--ink2);
+  font:700 10px var(--font-ui);letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .15s}
+.typegrid button.on{color:#fff;border-color:transparent}
+.logo-row{display:flex;align-items:center;gap:12px}
+.logo-prev{width:54px;height:54px;border-radius:13px;background:rgba(255,255,255,.9);border:1px solid var(--card-edge);object-fit:contain;padding:4px}
+.logo-btns{display:flex;gap:7px}
+.sbtn{padding:8px 13px;border-radius:10px;border:1px solid var(--card-edge);background:var(--input);color:var(--ink);font:600 12px var(--font-ui);cursor:pointer}
+.sbtn:hover{background:var(--chip)}
+.m-foot{display:flex;gap:9px;margin-top:18px}
+.btn{flex:1;padding:12px;border-radius:13px;border:none;font:700 13.5px var(--font-ui);cursor:pointer;transition:transform .1s,opacity .15s}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:linear-gradient(135deg,var(--crimson),#c23a31);color:#fff;box-shadow:0 6px 20px rgba(224,72,62,.35)}
+.btn.ghost{background:var(--chip);color:var(--ink)}
+.btn.danger{background:rgba(224,72,62,.13);color:var(--crimson);flex:0 0 auto;padding:12px 16px}
+
+/* ============ DETAILS PANELS · PINBOARD ============ */
+.dpanel{position:fixed;z-index:56;width:392px;max-height:74vh;min-width:300px;min-height:210px;overflow:auto;border-radius:22px;
+  background:var(--glass);border:1px solid var(--glass-edge);backdrop-filter:blur(24px) saturate(1.5);-webkit-backdrop-filter:blur(24px) saturate(1.5);
+  box-shadow:var(--shadow);padding:18px;animation:pop .25s var(--ease);scrollbar-width:thin;resize:both}
+.dpanel.dragging{transition:none;user-select:none;opacity:.93}
+.dpanel.tiled{resize:none;max-height:none;border-color:color-mix(in srgb,var(--gold) 50%,var(--glass-edge))}
+.dpanel .dp-x{position:absolute;top:12px;right:12px}
+.dp-grip{display:flex;align-items:center;justify-content:center;gap:4px;margin:-8px 0 8px;padding:5px 0;cursor:grab;touch-action:none;border-radius:8px}
+.dp-grip:active{cursor:grabbing}
+.dp-grip span{width:34px;height:4px;border-radius:99px;background:var(--ink3);opacity:.45}
+.dp-head{display:flex;gap:12px;align-items:center;margin-bottom:9px;padding-right:30px;cursor:grab;touch-action:none}
+.dp-logo{width:52px;height:52px;border-radius:12px;object-fit:contain;background:rgba(255,255,255,.9);padding:3px;border:1px solid var(--card-edge);flex:0 0 auto}
+.dp-logo.ph{display:flex;align-items:center;justify-content:center;font:700 16px var(--font-mono);color:#fff}
+.dp-kicker{display:flex;gap:6px;align-items:center;margin-bottom:3px}
+.dp-name{font-size:17px;font-weight:760;letter-spacing:-.01em;line-height:1.2}
+.dp-crumb{font-size:10.5px;color:var(--ink3);line-height:1.6;margin-bottom:10px}
+.dp-cmd{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:14px;background:var(--chip);border:1px solid color-mix(in srgb,var(--gold) 35%,var(--card-edge));margin-bottom:10px}
+.dp-cmd img,.dp-cmd .ph2{width:46px;height:46px;border-radius:99px;object-fit:cover;border:1.5px solid var(--gold);flex:0 0 auto}
+.dp-cmd .ph2{display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--gold),#A8762A);color:#fff;font:700 14px var(--font-mono);border:none}
+.dp-notes{font-size:12.5px;color:var(--ink2);line-height:1.55;margin-bottom:10px;white-space:pre-wrap}
+.dp-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
+.dp-stat{padding:7px 10px;border-radius:11px;background:var(--chip);border:1px solid var(--card-edge);font-size:10.5px;font-weight:600;color:var(--ink2)}
+.dp-stat b{font-family:var(--font-mono);font-size:13px;color:var(--ink);display:block}
+.dp-btns{display:flex;gap:7px}
+.node.selected{border-color:var(--ac);box-shadow:0 0 0 2px color-mix(in srgb,var(--ac) 60%,transparent),var(--shadow)}
+.n-main{cursor:pointer}
+@media (max-width:640px){.dpanel{left:10px!important;right:10px;width:auto!important;top:auto!important;bottom:10px;max-height:55vh;resize:none}}
+
+/* snap tiles (hold Ctrl while dragging a panel) */
+#tileOverlay{position:fixed;inset:0;z-index:54;display:none;pointer-events:none}
+#tileOverlay.show{display:block}
+#tileOverlay .tile{position:absolute;border:2px dashed color-mix(in srgb,var(--gold) 55%,transparent);border-radius:18px;background:color-mix(in srgb,var(--gold) 7%,transparent);transition:background .12s,border-color .12s}
+#tileOverlay .tile.hot{background:color-mix(in srgb,var(--gold) 22%,transparent);border-style:solid}
+#tileOverlay .tile.busy{opacity:.22}
+
+/* panel ↔ unit link lines (hold Shift while dragging a panel) */
+#linkLayer{position:fixed;inset:0;z-index:53;pointer-events:none;display:none}
+body.linksOn #linkLayer{display:block}
+#linkLayer path{fill:none;stroke:var(--gold);stroke-width:2;stroke-dasharray:6 6;opacity:.85}
+#linkLayer circle{fill:var(--gold)}
+
+/* focus board: only panels on the cardboard */
+body.focusBoard #world,body.focusBoard #dock{opacity:0;pointer-events:none;transition:opacity .3s}
+body.focusBoard #linkLayer{display:none}
+
+/* panels bar */
+#panelsBar{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(96px);z-index:58;display:flex;align-items:center;gap:4px;
+  padding:6px 8px;border-radius:99px;background:var(--glass);border:1px solid var(--glass-edge);backdrop-filter:blur(22px) saturate(1.5);-webkit-backdrop-filter:blur(22px) saturate(1.5);
+  box-shadow:var(--shadow);transition:transform .35s var(--ease)}
+#panelsBar.show{transform:translateX(-50%) translateY(0)}
+body.drawmode #panelsBar{transform:translateX(-50%) translateY(96px)!important}
+#panelsBar .pb-count{font:700 11px var(--font-mono);color:var(--ink2);padding:0 9px;white-space:nowrap}
+#panelsBar button{height:32px;padding:0 12px;border:none;border-radius:99px;background:transparent;color:var(--ink);font:600 11.5px var(--font-ui);cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap}
+#panelsBar button:hover{background:var(--chip)}
+#panelsBar button.on{background:var(--chip);color:var(--gold)}
+body.presenting #panelsBar{opacity:0;pointer-events:none}
+
+/* ink / pen kit */
+body.drawmode #viewport{cursor:crosshair}
+body.drawmode #nodes{pointer-events:none}
+body.drawmode.erasing #viewport{cursor:cell}
+#inkBar{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(96px);z-index:59;display:flex;align-items:center;gap:5px;
+  padding:7px 11px;border-radius:99px;background:var(--glass);border:1px solid var(--glass-edge);backdrop-filter:blur(22px) saturate(1.5);-webkit-backdrop-filter:blur(22px) saturate(1.5);box-shadow:var(--shadow);transition:transform .35s var(--ease);max-width:94vw;overflow-x:auto;scrollbar-width:none}
+#inkBar.show{transform:translateX(-50%) translateY(0)}
+#inkBar .swatch{width:24px;height:24px;border-radius:99px;border:2px solid transparent;cursor:pointer;flex:0 0 auto;padding:0}
+#inkBar .swatch.on{border-color:var(--ink);box-shadow:0 0 0 2px var(--bg)}
+#inkBar .ibtn{height:30px;min-width:30px;padding:0 10px;border:none;border-radius:99px;background:transparent;color:var(--ink);font:700 11.5px var(--font-ui);cursor:pointer;display:flex;align-items:center;gap:4px;flex:0 0 auto}
+#inkBar .ibtn:hover{background:var(--chip)}
+#inkBar .ibtn.on{background:var(--chip);color:var(--gold)}
+#inkBar .isep{width:1px;height:20px;background:var(--glass-edge);flex:0 0 auto}
+#inkLayer{position:absolute;left:0;top:0;overflow:visible;pointer-events:none}
+#inkLayer path{fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+/* ============ PRESENTATION MODE ============ */
+body.presenting #topbar,body.presenting #dock #fitBtn~*,body.presenting #connectBanner{opacity:0;pointer-events:none}
+body.presenting #topbar{transform:translateY(-110%)}
+body.presenting #dock{opacity:0;pointer-events:none}
+#presExit{position:fixed;top:14px;right:14px;z-index:120;display:none;padding:8px 15px;border-radius:99px;border:1px solid var(--glass-edge);
+  background:var(--glass);backdrop-filter:blur(16px);color:var(--ink);font:600 12px var(--font-ui);cursor:pointer}
+body.presenting #presExit{display:block}
+
+/* ============ TOAST ============ */
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);z-index:130;padding:11px 19px;border-radius:99px;
+  background:var(--card-solid);border:1px solid var(--card-edge);box-shadow:var(--shadow);font:600 12.5px var(--font-ui);
+  transition:transform .35s var(--ease);max-width:88vw;text-align:center}
+#toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ============ PRINT ============ */
+#printArea{display:none}
+@media print{
+  html,body{overflow:visible!important;height:auto!important;position:static!important}
+  body>*{display:none!important}
+  #printArea{display:block!important;font-family:Georgia,serif;color:#111}
+  #printArea h1{font-size:21px;margin-bottom:2px}
+  #printArea .psub{font-size:11px;color:#666;margin-bottom:14px}
+  #printArea ul{list-style:none;padding-left:18px;border-left:1px solid #ccc;margin-left:5px}
+  #printArea>ul{border-left:none;padding-left:0;margin-left:0}
+  #printArea li{padding:2.5px 0;font-size:12px;break-inside:avoid}
+  #printArea .pt{font-size:9px;font-weight:700;letter-spacing:.08em;color:#888;text-transform:uppercase;margin-right:6px}
+  #printArea .pc{font-family:monospace;font-weight:700;margin-right:5px}
+  /* —— polished PDF report —— */
+  .rep{font-family:"Segoe UI",-apple-system,Helvetica,Arial,sans-serif;color:#101626;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .rp-cover{min-height:88vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;page-break-after:always}
+  .rp-crest{width:96px;margin-bottom:18px}
+  .rp-eyebrow{font-size:10px;font-weight:800;letter-spacing:.3em;color:#A8762A;text-transform:uppercase;margin-bottom:10px}
+  .rp-cover h1{font-size:34px;line-height:1.15;letter-spacing:-.01em;margin-bottom:14px}
+  .rp-rule{width:90px;height:3px;background:#E8B33C;margin:0 auto 12px}
+  .rp-date{font-size:11px;color:#6A7388;margin-bottom:26px}
+  .rp-leads{display:flex;gap:18px;justify-content:center;margin-bottom:30px}
+  .rp-lead{display:flex;align-items:center;gap:12px;text-align:left;border:1px solid #D9DEEA;border-left:3px solid #E8B33C;border-radius:12px;padding:10px 16px}
+  .rp-lead img,.rp-leadph{width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid #E8B33C}
+  .rp-lead.big img{width:64px;height:64px}
+  .rp-leadph{display:flex;align-items:center;justify-content:center;background:#E8B33C;color:#fff;font-weight:800;font-size:18px}
+  .rp-leadrank{font-size:8.5px;font-weight:800;letter-spacing:.16em;color:#A8762A;text-transform:uppercase}
+  .rp-leadname{font-size:14px;font-weight:700}
+  .rp-leadunit{font-size:10px;color:#6A7388}
+  .rp-toc{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:26px;width:100%;max-width:680px}
+  .rp-toc-item{display:flex;align-items:center;gap:8px;border:1px solid #D9DEEA;border-left:3px solid #E8B33C;border-radius:10px;padding:8px 12px;text-decoration:none;color:#101626;font-size:10.5px;font-weight:700}
+  .rp-toc-item img{width:20px;height:20px;object-fit:contain}
+  .rp-toc-item .num{font-family:Consolas,monospace;color:#A8762A;font-weight:800}
+  .rp-scmd{width:21px;height:21px;border-radius:50%;object-fit:cover;border:1.5px solid #E8B33C;align-self:center}
+  .rp-stats{border-collapse:separate;border-spacing:10px 0}
+  .rp-stats td{border:1px solid #D9DEEA;border-radius:10px;padding:10px 18px;font-size:10px;color:#6A7388;text-align:center}
+  .rp-stats b{display:block;font-size:20px;color:#101626;font-family:Consolas,monospace}
+  .rp-sec{page-break-before:always;padding-top:6px}
+  .rp-fhead{display:flex;align-items:center;gap:14px;border-bottom:2.5px solid #E8B33C;padding-bottom:10px;margin-bottom:14px}
+  .rp-flogo{width:52px;height:52px;object-fit:contain}
+  .rp-ftitle{flex:1}
+  .rp-feyebrow{font-size:9px;font-weight:800;letter-spacing:.22em;color:#A8762A;text-transform:uppercase}
+  .rp-fhead h2{font-size:22px;letter-spacing:-.01em}
+  .rp-fnote{font-size:10.5px;color:#6A7388;margin-top:2px}
+  .rp-tree{margin-top:4px}
+  .rp-row{padding:5px 0 5px 11px;margin:4px 0;border-left:3px solid #E8B33C;break-inside:avoid}
+  .rp-row-t{font-size:8px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin-right:7px}
+  .rp-row-c{font-family:Consolas,monospace;font-weight:700;font-size:9.5px;color:#A8762A;margin-right:6px}
+  .rp-row-n{font-size:11.5px;font-weight:700;color:#101626}
+  .rp-row-l{font-size:9.5px;color:#6A7388}
+  .rp-row-note{font-size:9px;color:#6A7388;margin-top:2px}
+  .rp-foot{margin-top:24px;text-align:center;font-size:8.5px;color:#9AA1B5;letter-spacing:.14em;text-transform:uppercase}
+  /* —— unit-brief cards (PDF of open panels) —— */
+  .pp-wrap{font-family:"Segoe UI",-apple-system,Helvetica,Arial,sans-serif;color:#101626;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .pp-head{display:flex;align-items:center;gap:12px;border-bottom:2.5px solid #E8B33C;padding-bottom:10px;margin-bottom:16px}
+  .pp-head img{width:44px}
+  .pp-title{font-size:20px;font-weight:800;letter-spacing:-.01em}
+  .pp-sub{font-size:10px;color:#6A7388}
+  .pp-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .pp-card{border:1px solid #D9DEEA;border-top:3.5px solid var(--pc,#E8B33C);border-radius:12px;padding:12px 14px;break-inside:avoid}
+  .pp-khead{display:flex;gap:10px;align-items:center;margin-bottom:6px}
+  .pp-khead img.lg{width:38px;height:38px;object-fit:contain}
+  .pp-type{font-size:8px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+  .pp-name{font-size:14.5px;font-weight:760}
+  .pp-crumb{font-size:8.5px;color:#6A7388;margin-bottom:8px;line-height:1.5}
+  .pp-cmd{display:flex;gap:9px;align-items:center;border:1px solid #EADFC4;background:#FBF6E9;border-radius:9px;padding:6px 9px;margin-bottom:8px}
+  .pp-cmd img{width:32px;height:32px;border-radius:50%;object-fit:cover;border:1.5px solid #E8B33C}
+  .pp-cmdr{font-size:7.5px;font-weight:800;letter-spacing:.14em;color:#A8762A;text-transform:uppercase}
+  .pp-cmdn{font-size:11px;font-weight:700}
+  .pp-notes{font-size:9.5px;color:#3A4358;line-height:1.55;margin-bottom:8px;white-space:pre-wrap}
+  .pp-stats{display:flex;gap:5px;flex-wrap:wrap}
+  .pp-stat{border:1px solid #D9DEEA;border-radius:7px;padding:3px 8px;font-size:8.5px;color:#6A7388}
+  .pp-stat b{color:#101626;font-family:Consolas,monospace}
+}
+@page{margin:13mm 12mm}
+@media (max-width:640px){
+  #topbar{gap:7px;padding:8px}
+  #brand .t2{display:none}
+  #stats{order:5;width:100%;overflow-x:auto;scrollbar-width:none}
+  #searchwrap .skey{display:none}
+  .node{width:228px}
+  .modal{padding:17px;border-radius:18px}
+}
+</style>
+</head>
+<body>
+<h1 class="seo-only">Free Organogram Builder — make organizational charts online</h1>
+<p class="seo-only">Organogram Builder is a free, open-source organizational chart maker that runs in your browser. Build an org chart by hand or import it from an Excel or CSV file, switch between top-down, horizontal and inverted layouts, add people and photos, and export to PDF, Excel, CSV or PowerPoint. No sign-up and no servers — your data stays on your device.</p>
+<noscript><p style="padding:24px;font-family:sans-serif;color:#111;background:#fff">Organogram Builder is a free, open-source organizational chart maker. Please enable JavaScript to use it in your browser.</p></noscript>
+<div id="backdrop"><div id="dotgrid"></div><div class="blob a"></div><div class="blob b"></div><div class="blob c"></div><div class="blob d"></div></div>
+
+<div id="viewport"><div id="world"><svg id="edges"></svg><svg id="inkLayer"></svg><div id="nodes"></div></div></div>
+
+<header id="topbar">
+  <a id="brand" href="https://orgbuilder.720p.red" target="_blank" rel="noopener" title="Organogram Builder — free online org chart maker" style="text-decoration:none;color:inherit"><img id="brandLogo" alt="Organogram Builder"><div><div class="t1">Organogram Builder</div><div class="t2">Free · Open Source ↗</div></div></a>
+  <div id="searchwrap">
+    <span class="sicon">⌕</span>
+    <input id="search" type="text" placeholder="Search by name or code…" autocomplete="off" spellcheck="false">
+    <span class="skey">/</span>
+    <div id="results"></div>
+  </div>
+  <div id="stats"></div>
+  <div id="actions">
+    <button class="tbtn" id="saveStatus"><span class="sdot"></span><span class="stext">Browser</span></button>
+    <button class="tbtn" id="tplBtn" title="Start from a template">▦ <span class="lbl">Templates</span></button>
+    <div class="menu-wrap">
+      <button class="tbtn" id="exportBtn" title="Export">⇩ <span class="lbl">Export</span></button>
+      <div class="menu" id="exportMenu">
+        <button data-x="template">▦ New from a template…</button>
+        <button data-x="importsheet">📈 Import from Excel / CSV…</button>
+        <div class="sep"></div>
+        <button data-x="excel">📊 Export Excel (.xls)</button>
+        <button data-x="csv">📄 Export CSV</button>
+        <button data-x="pdf">📕 Export PDF report</button>
+        <button data-x="pptx">📽 Export PowerPoint deck</button>
+        <div class="sep"></div>
+        <button data-x="json">💾 Backup (.json)</button>
+        <button data-x="restore">📂 Restore backup…</button>
+        <button data-x="linkdb" id="linkDbItem">🗄 Use a local database file…</button>
+        <div class="sep"></div>
+        <button data-x="levels">🏷 Rename levels…</button>
+        <button data-x="sample">↺ Load sample data</button>
+        <button data-x="blank">🧹 Clear everything</button>
+      </div>
+    </div>
+    <button class="tbtn icononly" id="cmdBtn" title="Show people">👤</button>
+    <button class="tbtn icononly" id="printBtn" title="Print">🖨</button>
+    <button class="tbtn icononly" id="presBtn" title="Presentation mode">▶</button>
+    <button class="tbtn icononly" id="themeBtn" title="Toggle theme">◐</button>
+  </div>
+</header>
+
+<div id="connectBanner"><span>🔗 Connect mode — tap the node that will become the new parent of <b id="connName"></b></span><button id="connCancel">Cancel</button></div>
+
+<div id="dock">
+  <button id="zin" title="Zoom in">＋</button>
+  <button id="zout" title="Zoom out">－</button>
+  <button id="fitBtn" title="Fit to view">⛶</button>
+  <button id="centerBtn" title="Centre on root">◎</button>
+  <button id="layoutBtn" title="Layout: top-down">⊟</button>
+  <button id="inkBtn" title="Whiteboard — pen, shapes &amp; arrows">✎</button>
+  <div id="zoomPct">100%</div>
+</div>
+
+<button id="presExit">Exit presentation · Esc</button>
+
+<div id="overlay">
+  <div class="modal" id="modal">
+    <div class="m-head">
+      <div><div class="m-title" id="mTitle">Edit node</div><div class="m-sub" id="mSub"></div></div>
+      <button class="m-x" id="mClose">✕</button>
+    </div>
+    <div class="field"><label>Name</label><input type="text" id="fName" placeholder="e.g. Platform Engineering"></div>
+    <div class="frow">
+      <div class="field"><label>Code (optional)</label><input type="text" id="fCode" placeholder="e.g. ENG-INF"></div>
+      <div class="field"><label>Parent</label><select id="fParent"></select></div>
+    </div>
+    <div class="field"><label>Level</label><div class="typegrid" id="fType"></div></div>
+    <div class="field"><label>Notes · location · remarks</label><textarea id="fNotes" placeholder="Location, focus, headcount, remarks…"></textarea></div>
+    <div class="field"><label>Lead / head (optional)</label>
+      <div class="cmdrow"><input type="text" id="fCmdRank" placeholder="Title · e.g. CEO, VP, Manager"><input type="text" id="fCmdName" placeholder="Person's name"></div>
+      <div class="logo-row"><img class="logo-prev" id="fCmdPrev" alt=""><div class="logo-btns"><button class="sbtn" id="fCmdUp">Upload photo</button><button class="sbtn" id="fCmdClear">Remove</button><input type="file" id="fCmdFile" accept="image/*" hidden></div></div>
+    </div>
+    <div class="field"><label>Logo / emblem</label>
+      <div class="logo-row">
+        <img class="logo-prev" id="fLogoPrev" alt="">
+        <div class="logo-btns">
+          <button class="sbtn" id="fLogoUp">Upload image</button>
+          <button class="sbtn" id="fLogoClear">Remove</button>
+          <input type="file" id="fLogoFile" accept="image/*" hidden>
+        </div>
+      </div>
+    </div>
+    <div class="m-foot">
+      <button class="btn danger" id="mDelete">Delete</button>
+      <button class="btn ghost" id="mCancel">Cancel</button>
+      <button class="btn primary" id="mSave">Save node</button>
+    </div>
+  </div>
+</div>
+
+<div id="tileOverlay"></div>
+<svg id="linkLayer"></svg>
+<div id="panelsBar">
+  <span class="pb-count" id="pbCount"></span>
+  <button id="pbFocus" title="Hide the tree — only panels on the board">🗂 Focus board</button>
+  <button id="pbLinks" title="Link every panel to its node (or Shift-drag a panel)">🔗 Links</button>
+  <button id="pbPrint" title="Print / save only the open panels as a PDF">🖨 PDF panels</button>
+  <button id="pbClose" title="Close all panels">✕ Close all</button>
+</div>
+<div id="inkBar">
+  <span id="inkSwatches" style="display:flex;gap:5px"></span>
+  <span class="isep"></span>
+  <button class="ibtn shape on" data-shape="pen" title="Pen — freehand">✎</button>
+  <button class="ibtn shape" data-shape="line" title="Line">╱</button>
+  <button class="ibtn shape" data-shape="arrow" title="Arrow">↗</button>
+  <button class="ibtn shape" data-shape="rect" title="Rectangle">▢</button>
+  <button class="ibtn shape" data-shape="ellipse" title="Ellipse">◯</button>
+  <span class="isep"></span>
+  <button class="ibtn ink-w" data-w="2.5" title="Fine">S</button>
+  <button class="ibtn ink-w on" data-w="4" title="Medium pen">M</button>
+  <button class="ibtn ink-w" data-w="7" title="Bold marker">L</button>
+  <span class="isep"></span>
+  <button class="ibtn" id="inkEraser" title="Eraser — sweep over strokes to remove them">⌫ Eraser</button>
+  <button class="ibtn" id="inkUndo" title="Undo last stroke">↶</button>
+  <button class="ibtn" id="inkClear" title="Clear all ink">🗑</button>
+  <span class="isep"></span>
+  <button class="ibtn" id="inkDone" title="Put the pen down">✓ Done</button>
+</div>
+<div id="toast"></div>
+<div id="ctxMenu"></div>
+<div id="printArea"></div>
+<input type="file" id="importFile" accept=".json" hidden>
+<input type="file" id="sheetFile" accept=".xlsx,.xls,.csv" hidden>
+<script>
+"use strict";
+/* ================= EMBLEMS · generic SVG, fully swappable ================= */
+const _svg = s => "data:image/svg+xml;utf8," + encodeURIComponent(s.replace(/\s+/g," ").trim());
+const _emb = (bg, inner) => _svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="${bg}"/>${inner}</svg>`);
+const LOGOS = {
+  brand: _svg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="#0B1224"/><circle cx="24" cy="12.5" r="4.6" fill="#E8B33C"/><circle cx="12.5" cy="34" r="4.6" fill="#3DD6C3"/><circle cx="35.5" cy="34" r="4.6" fill="#E0483E"/><path d="M24 17.4v6.1M12.5 29.4V25h23v4.4" fill="none" stroke="#9AA6C0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`),
+  grid:   _emb("#E8B33C", `<g fill="#0B1224"><rect x="13" y="13" width="9" height="9" rx="2"/><rect x="26" y="13" width="9" height="9" rx="2"/><rect x="13" y="26" width="9" height="9" rx="2"/><rect x="26" y="26" width="9" height="9" rx="2"/></g>`),
+  layers: _emb("#3DD6C3", `<g fill="none" stroke="#06262b" stroke-width="2.6" stroke-linejoin="round"><path d="M24 11l13 6.5-13 6.5-13-6.5z" fill="#06262b"/><path d="M11 24.5l13 6.5 13-6.5"/><path d="M11 30l13 6.5 13-6.5"/></g>`),
+  spark:  _emb("#E0483E", `<path d="M24 10l3.6 9.4 9.4 3.6-9.4 3.6L24 36l-3.6-9.4L11 23l9.4-3.6z" fill="#2a0a08"/>`),
+  globe:  _emb("#8B7CF6", `<g fill="none" stroke="#1b1340" stroke-width="2.4"><circle cx="24" cy="24" r="11"/><ellipse cx="24" cy="24" rx="5" ry="11"/><path d="M13.5 24h21"/></g>`),
+  pulse:  _emb("#4CC272", `<path d="M11 24h6l3-7.5 5 15 3-7.5h9" fill="none" stroke="#0c2c18" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>`)
+};
+const CMD_PHOTOS = {};
+
+/* ================= SEED · sample / mock data (no real people) ================= */
+let _uid = 1; const uid = () => "n" + (_uid++) + "_" + Math.random().toString(36).slice(2,7);
+const N = (name,type,o={},children=[]) => ({ id:uid(), name, type, code:o.code||"", notes:o.notes||"", logo:o.logo||"", cmd:o.cmd||null, children });
+const T = (code,name,notes,cmd) => N(name,"team",{code,notes,cmd:cmd||null});
+
+function blankData(){
+  _uid = 1;
+  return N("My Organization","organization",{logo:"brand",notes:"Use ➕ on a node — or import a spreadsheet — to start building"});
+}
+
+function defaultData(){
+  _uid = 1;
+  const r = N("Northwind Labs","organization",{logo:"brand",notes:"Remote-first · ~480 people",cmd:{rank:"Chief Executive Officer",name:"Dana Ferreira"}},[
+    N("Product & Design","division",{logo:"spark",notes:"Discovery to delivery",cmd:{rank:"Chief Product Officer",name:"Mara Lindqvist"}},[
+      N("Product Management","department",{notes:"Roadmap & strategy",cmd:{rank:"Director of Product",name:"Owen Bauer"}},[
+        T("PM-CORE","Core Platform Squad","Billing, identity, public API"),
+        T("PM-GROW","Growth Squad","Onboarding & activation"),
+        T("PM-MOB","Mobile Squad","iOS & Android apps")]),
+      N("Design","department",{notes:"Brand, product & research",cmd:{rank:"Director of Design",name:"Selina Park"}},[
+        T("DSGN-PRD","Product Design"),
+        T("DSGN-RES","UX Research"),
+        T("DSGN-BR","Brand Studio")])]),
+    N("Engineering","division",{logo:"layers",notes:"Builds & runs the platform",cmd:{rank:"Chief Technology Officer",name:"Raj Anand"}},[
+      N("Platform","department",{notes:"Infra & developer experience",cmd:{rank:"VP Engineering",name:"Tomás Ibáñez"}},[
+        T("ENG-INF","Infrastructure","Cloud, CI/CD, on-call"),
+        T("ENG-DX","Developer Experience"),
+        T("ENG-SEC","Security Engineering")]),
+      N("Applications","department",{notes:"Customer-facing apps",cmd:{rank:"VP Engineering",name:"Hana Müller"}},[
+        T("ENG-WEB","Web Frontend"),
+        T("ENG-API","Backend Services"),
+        T("ENG-DATA","Data & ML")]),
+      N("Quality","department",{notes:"Test & release",cmd:{rank:"Director of Quality",name:"Felix Otieno"}},[
+        T("QA-AUTO","Test Automation"),
+        T("QA-REL","Release Engineering")])]),
+    N("Go-to-Market","division",{logo:"globe",notes:"Revenue & customers",cmd:{rank:"Chief Revenue Officer",name:"Bianca Rossi"}},[
+      N("Sales","department",{notes:"New & expansion revenue",cmd:{rank:"VP Sales",name:"Daniel Kim"}},[
+        T("SAL-EMEA","EMEA"),
+        T("SAL-AMER","Americas"),
+        T("SAL-APAC","APAC")]),
+      N("Marketing","department",{notes:"Demand & brand",cmd:{rank:"VP Marketing",name:"Aisha Khan"}},[
+        T("MKT-DEM","Demand Generation"),
+        T("MKT-CON","Content"),
+        T("MKT-EV","Events")]),
+      N("Customer Success","department",{notes:"Retention & support",cmd:{rank:"Director of CS",name:"Leo Nakamura"}},[
+        T("CS-ONB","Onboarding"),
+        T("CS-SUP","Support"),
+        T("CS-ACC","Account Management")])]),
+    N("Operations","division",{logo:"grid",notes:"People, finance & legal",cmd:{rank:"Chief Operating Officer",name:"Grace Adeyemi"}},[
+      N("People","department",{notes:"Talent & culture",cmd:{rank:"VP People",name:"Nora Holm"}},[
+        T("PPL-TA","Talent Acquisition"),
+        T("PPL-OPS","People Operations")]),
+      N("Finance","department",{notes:"Planning & accounting",cmd:{rank:"VP Finance",name:"Victor Costa"}},[
+        T("FIN-FPA","FP&A"),
+        T("FIN-ACC","Accounting")]),
+      N("Legal","department",{notes:"Counsel & compliance",cmd:{rank:"General Counsel",name:"Priya Nair"}},[
+        T("LEG-COM","Compliance")])])]);
+  const RANKS = {organization:"Chief Executive",division:"Vice President",department:"Director",team:"Lead"};
+  forEach(r, n => { if(!n.cmd && RANKS[n.type]) n.cmd = {rank:RANKS[n.type], name:"", photo:""}; });
+  return r;
+}
+
+/* ================= LEVELS · ordered & relabelable ================= */
+const TYPES = ["organization","division","department","team","unit"];
+const TYPE_META = {
+  organization:{label:"Organization",color:"var(--gold)",hex:"#E8B33C"},
+  division:{label:"Division",color:"var(--crimson)",hex:"#E0483E"},
+  department:{label:"Department",color:"var(--cyan)",hex:"#3DD6C3"},
+  team:{label:"Team",color:"var(--violet)",hex:"#8B7CF6"},
+  unit:{label:"Unit",color:"var(--green)",hex:"#4CC272"}
+};
+const DEFAULT_LABELS = Object.fromEntries(TYPES.map(t => [t, TYPE_META[t].label]));
+function applyLabels(labels){ for(const t of TYPES){ TYPE_META[t].label = (labels && labels[t]) ? labels[t] : DEFAULT_LABELS[t]; } }
+function pluralLabel(t){ const l = TYPE_META[t].label; return /s$/i.test(l) ? l : l + "s"; }
+
+/* ================= STATE & STORAGE ================= */
+const SKEY = "orgbuilder_v1";
+const store = (() => {              // guarded: falls back to in-memory if storage is unavailable
+  let mem = {};
+  let ok = false;
+  try { const t="__t"+Date.now(); localStorage.setItem(t,"1"); localStorage.removeItem(t); ok = true; } catch(e){ ok = false; }
+  return {
+    get(k){ try { return ok ? localStorage.getItem(k) : (mem[k] ?? null); } catch(e){ return mem[k] ?? null; } },
+    set(k,v){ try { if(ok){ localStorage.setItem(k,v); return; } } catch(e){} mem[k]=v; },
+    persistent: ok
+  };
+})();
+
+let root, collapsed = new Set(), view = {x:0,y:0,s:1}, levelFilter = null, showCmd = false, lastBBox = null, revealPath = new Set();
+let editingId = null, connectingId = null, searchHits = null;
+let layout = "td", labels = null;          // layout: td | bu | lr ; labels: custom level names
+
+function loadState(){
+  const raw = store.get(SKEY);
+  if(raw){ try{ const d = JSON.parse(raw); if(d && d.root){
+    root = d.root; collapsed = new Set(d.collapsed||[]); ink = d.ink||[];
+    labels = d.labels || null; layout = d.layout || "td";
+    applyLabels(labels); migrate(); return;
+  } }catch(e){} }
+  root = defaultData();
+  collapsed = new Set();
+  applyLabels(labels); migrate();
+  forEach(root, n => { if(n.type==="department") collapsed.add(n.id); });   // start tidy: whole picture at a glance
+}
+function migrate(){ /* reserved for future schema upgrades */ }
+let _saveT;
+function save(){
+  clearTimeout(_saveT);
+  _saveT = setTimeout(()=>{
+    store.set(SKEY, JSON.stringify({v:3, root, collapsed:[...collapsed], ink, labels, layout}));
+    if(typeof scheduleFileWrite === "function") scheduleFileWrite();
+  }, 150);
+}
+
+/* ================= TREE HELPERS ================= */
+function forEach(n, fn, parent=null, depth=0){ fn(n,parent,depth); (n.children||[]).forEach(c=>forEach(c,fn,n,depth+1)); }
+function findNode(id, n=root, parent=null){ if(n.id===id) return {node:n,parent}; for(const c of (n.children||[])){ const r=findNode(id,c,n); if(r) return r; } return null; }
+function isDescendant(maybeChildId, ancestor){ let f=false; forEach(ancestor,n=>{ if(n.id===maybeChildId) f=true; }); return f; }
+function pathOf(id){ const path=[]; (function walk(n,acc){ if(n.id===id){ path.push(...acc,n); return true; } for(const c of (n.children||[])) if(walk(c,[...acc,n])) return true; return false; })(root,[]); return path; }
+function descCount(n){ const c={}; forEach(n, m=>{ if(m!==n) c[m.type]=(c[m.type]||0)+1; }); return c; }
+
+/* ================= LAYOUT (top → bottom tidy tree) ================= */
+const NW=262, NH=74, GX=40, SIND=42;
+const rank = t => TYPES.indexOf(t);
+function isOpen(n){
+  if(!(n.children||[]).length) return false;
+  if(levelFilter) return rank(n.type) < rank(levelFilter);
+  if(!collapsed.has(n.id)) return true;
+  return revealPath.has(n.id);           // partially revealed by a search jump
+}
+function visKids(n){
+  return (revealPath.size && collapsed.has(n.id) && revealPath.has(n.id))
+    ? (n.children||[]).filter(c=>revealPath.has(c.id))
+    : (n.children||[]);
+}
+function isStack(n){ return layout==="td" && (n.children||[]).length>0 && rank(n.type) >= rank("department"); }
+function computeLayout(){
+  // Generic tidy-tree in (main = depth axis, cross = sibling axis); mapped to x/y per orientation.
+  const pos = new Map(), tmp = new Map();
+  const horiz = layout==="lr";
+  const sgap = showCmd ? 80 : 14, stop = showCmd ? 116 : 56;
+  const NMAIN = horiz ? NW : NH;             // node footprint along depth
+  const NCROSS = horiz ? NH : NW;            // node footprint along sibling spread
+  const LGAP = showCmd ? (horiz ? 150 : 142) : (horiz ? 118 : 102);  // gap between depth levels
+  const SGAP = horiz ? 26 : GX;              // gap between siblings
+  const setNode = (n,m,c,stack)=>tmp.set(n.id,{m,c,n,stack:!!stack});
+  function box(n){
+    if(!isOpen(n)) return { cross:NCROSS, main:NMAIN, place:(m,c)=>setNode(n,m,c) };
+    const kn = visKids(n);
+    const kids = kn.map(box);
+    if(isStack(n)){                           // indented vertical list (top-down only)
+      const cross = Math.max(NCROSS, SIND + Math.max(...kids.map(k=>k.cross)));
+      let main = NMAIN + stop;
+      const offs = kids.map(k=>{ const o=main; main += k.main + sgap; return o; });
+      main -= sgap;
+      return { cross, main, place:(m,c)=>{
+        setNode(n,m,c,true);
+        kids.forEach((k,i)=>k.place(m+offs[i], c+SIND));
+      }};
+    }
+    const tcross = kids.reduce((s,k)=>s+k.cross,0) + SGAP*(kids.length-1);
+    const cross = Math.max(NCROSS, tcross);
+    const main = NMAIN + LGAP + Math.max(...kids.map(k=>k.main));
+    return { cross, main, place:(m,c)=>{
+      let cc = c + (cross - tcross)/2;
+      kids.forEach((k,i)=>{ k.place(m+NMAIN+LGAP, cc); cc += k.cross + SGAP; });
+      const centers = kn.map(ch=>tmp.get(ch.id).c + NCROSS/2);
+      let pc = (centers[0]+centers[centers.length-1])/2 - NCROSS/2;
+      pc = Math.max(c, Math.min(pc, c+cross-NCROSS));
+      setNode(n,m,pc);
+    }};
+  }
+  box(root).place(0,0);
+  let maxMain = 0; for(const [,t] of tmp) maxMain = Math.max(maxMain, t.m + NMAIN);
+  for(const [id,t] of tmp){
+    let x,y;
+    if(horiz){ x = t.m; y = t.c; }
+    else if(layout==="bu"){ x = t.c; y = maxMain - t.m - NMAIN; }
+    else { x = t.c; y = t.m; }
+    pos.set(id,{x,y,n:t.n,stack:t.stack});
+  }
+  return pos;
+}
+
+/* ================= RENDER ================= */
+const $ = s => document.querySelector(s);
+const nodesEl = $("#nodes"), edgesEl = $("#edges"), worldEl = $("#world"), vpEl = $("#viewport");
+const domNodes = new Map();
+
+function logoSrc(n){ if(!n.logo) return null; return LOGOS[n.logo] || (n.logo.startsWith("data:") ? n.logo : null); }
+function initials(n){ const m=(n.name||"?").replace(/[^A-Za-z0-9 ]/g,"").trim().split(/\s+/); return (m[0]?.[0]||"?").toUpperCase()+(m[1]?.[0]||"").toUpperCase(); }
+
+function render(){
+  const pos = computeLayout();
+  // remove stale
+  for(const [id,el] of domNodes){ if(!pos.has(id)){ el.remove(); domNodes.delete(id); } }
+  // nodes
+  for(const [id,p] of pos){
+    let el = domNodes.get(id);
+    const n = p.n, fresh = !el;
+    if(fresh){
+      el = document.createElement("div");
+      el.dataset.id = id;
+      el.innerHTML = `
+        <div class="n-main">
+          <div class="n-logoslot"></div>
+          <div class="n-text">
+            <div class="n-kicker"><span class="n-type"></span><span class="n-code"></span></div>
+            <div class="n-name"></div><div class="n-note"></div>
+          </div>
+        </div>
+        <button class="n-toggle" title="Expand / collapse"><span class="cnt"></span><span class="chev">▾</span></button>
+        <div class="n-actions">
+          <button class="a-add" title="Add child">＋</button>
+          <button class="a-edit" title="Edit">✎</button>
+          <button class="a-link" title="Reconnect to a different parent">🔗</button>
+          <button class="a-del danger" title="Delete">🗑</button>
+        </div>`;
+      nodesEl.appendChild(el);
+      domNodes.set(id, el);
+      el.classList.add("entering");
+      requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.remove("entering")));
+      // events
+      el.querySelector(".n-toggle").addEventListener("click", e=>{ e.stopPropagation(); toggle(id); });
+      el.querySelector(".a-add").addEventListener("click", e=>{ e.stopPropagation(); openModal(null, id); });
+      el.querySelector(".a-edit").addEventListener("click", e=>{ e.stopPropagation(); openModal(id); });
+      el.querySelector(".a-link").addEventListener("click", e=>{ e.stopPropagation(); startConnect(id); });
+      el.querySelector(".a-del").addEventListener("click", e=>{ e.stopPropagation(); askDelete(id); });
+      el.addEventListener("click", ()=>{ if(connectingId) finishConnect(id); else toggleDetails(id); });
+      el.addEventListener("mouseenter", ()=>litEdges(id,true));
+      el.addEventListener("mouseleave", ()=>litEdges(id,false));
+    }
+    // update content
+    el.className = "node t-"+n.type + (el.classList.contains("entering")?" entering":"") + (levelFilter===n.type?" lvl-hit":"");
+    if(connectingId){ el.classList.add(connectingId===id?"connect-source":"connect-target"); }
+    if(searchHits && !searchHits.has(id)) el.classList.add("search-dim");
+    if(panels.has(id)) el.classList.add("selected");
+    const slot = el.querySelector(".n-logoslot"), src = logoSrc(n);
+    slot.innerHTML = src ? `<img class="n-logo" src="${src}" alt="">` : `<div class="n-logo ph">${initials(n)}</div>`;
+    el.querySelector(".n-type").textContent = TYPE_META[n.type]?.label || n.type;
+    const codeEl = el.querySelector(".n-code");
+    codeEl.textContent = n.code; codeEl.style.display = n.code ? "" : "none";
+    el.querySelector(".n-name").textContent = n.name;
+    const noteEl = el.querySelector(".n-note");
+    noteEl.textContent = n.notes; noteEl.style.display = n.notes ? "" : "none";
+    const tog = el.querySelector(".n-toggle"), kidsN = (n.children||[]).length;
+    const partial = revealPath.size && collapsed.has(id) && revealPath.has(id);
+    tog.style.display = kidsN ? "" : "none";
+    tog.querySelector(".cnt").textContent = partial ? visKids(n).length+"/"+kidsN : kidsN;
+    tog.classList.toggle("open", isOpen(n));
+    const childT = TYPES[Math.min(TYPES.indexOf(n.type)+1, TYPES.length-1)];
+    const addBtn = el.querySelector(".a-add");
+    addBtn.textContent = "＋ "+TYPE_META[childT].label;
+    addBtn.title = "Add "+TYPE_META[childT].label;
+    let cc = el.querySelector(".cmd-card");
+    const showC = showCmd && n.cmd && (n.cmd.name || n.cmd.photo);
+    if(showC){
+      if(!cc){ cc = document.createElement("div"); cc.className = "cmd-card"; el.appendChild(cc); }
+      const av = n.cmd.photo ? `<img class="cmd-av" src="${n.cmd.photo}" alt="">`
+        : `<div class="cmd-av ph">${(n.cmd.name||"?").trim().charAt(0).toUpperCase()}</div>`;
+      cc.innerHTML = av + `<div><div class="cmd-rank">${esc(n.cmd.rank||"Lead")}</div><div class="cmd-name">${esc(n.cmd.name||"")}</div></div>`;
+    } else if(cc) cc.remove();
+    el.style.left = p.x+"px"; el.style.top = p.y+"px";
+  }
+  // edges
+  let minX=1e9,minY=1e9,maxX=-1e9,maxY=-1e9, paths=[];
+  for(const [id,p] of pos){
+    minX=Math.min(minX,p.x); minY=Math.min(minY,p.y); maxX=Math.max(maxX,p.x+NW); maxY=Math.max(maxY,p.y+NH);
+    if(!isOpen(p.n)) continue;
+    for(const c of visKids(p.n)){
+      const cp = pos.get(c.id); if(!cp) continue;
+      let dPath;
+      if(p.stack){
+        const sx=p.x+24, cy=cp.y+NH/2;
+        dPath = `M ${sx} ${p.y+NH} L ${sx} ${cy-10} Q ${sx} ${cy} ${sx+10} ${cy} L ${cp.x} ${cy}`;
+      } else if(layout==="lr"){
+        const x1=p.x+NW, y1=p.y+NH/2, x2=cp.x, y2=cp.y+NH/2, mx=(x1+x2)/2;
+        dPath = `M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
+      } else if(layout==="bu"){
+        const x1=p.x+NW/2, y1=p.y, x2=cp.x+NW/2, y2=cp.y+NH, my=(y1+y2)/2;
+        dPath = `M ${x1} ${y1} C ${x1} ${my}, ${x2} ${my}, ${x2} ${y2}`;
+      } else {
+        const x1=p.x+NW/2, y1=p.y+NH, x2=cp.x+NW/2, y2=cp.y, my=(y1+y2)/2;
+        dPath = `M ${x1} ${y1} C ${x1} ${my}, ${x2} ${my}, ${x2} ${y2}`;
+      }
+      paths.push(`<path data-from="${id}" data-to="${c.id}" stroke="${TYPE_META[c.type]?.hex||'#888'}" stroke-opacity="0.55" d="${dPath}"/>`);
+    }
+  }
+  edgesEl.setAttribute("width", maxX+200); edgesEl.setAttribute("height", maxY+200);
+  edgesEl.innerHTML = paths.join("");
+  lastBBox = {minX,minY,maxX,maxY};
+  lastPos = pos;
+  refreshPanels(); updateLinks();
+  renderStats(); save();
+}
+
+function litEdges(id,on){
+  edgesEl.querySelectorAll(`path[data-from="${id}"],path[data-to="${id}"]`).forEach(p=>p.classList.toggle("lit",on));
+}
+
+function materializeFilter(){
+  if(!levelFilter) return;
+  forEach(root, n=>{
+    if(!(n.children||[]).length) return;
+    if(rank(n.type) < rank(levelFilter)) collapsed.delete(n.id); else collapsed.add(n.id);
+  });
+  levelFilter = null;
+}
+function toggle(id){
+  const wasPartial = revealPath.size && collapsed.has(id) && revealPath.has(id);
+  if(revealPath.size){    // fold the search reveal into real expansion before toggling
+    revealPath.forEach(pid=>{ const f=findNode(pid); if(f && (f.node.children||[]).length) collapsed.delete(pid); });
+    revealPath.clear();
+  }
+  materializeFilter();
+  if(wasPartial) collapsed.delete(id);          // a partial node expands to its full strength
+  else if(collapsed.has(id)) collapsed.delete(id); else collapsed.add(id);
+  render(); clampView(true);
+}
+
+/* ================= DETAILS PANELS · MULTI / PINBOARD ================= */
+const panels = new Map();                 // id -> {el, tile, ro}
+let zTop = 60, panMoved = false, linkMode = false, focusBoard = false, lastPos = null;
+function toggleDetails(id){ panels.has(id) ? closeDetails(id) : openDetails(id); }
+
+function fillPanel(el, id){
+  const f = findNode(id); if(!f) return false;
+  const n = f.node, t = TYPE_META[n.type]||{};
+  const src2 = logoSrc(n);
+  el.querySelector(".dp-logoslot").innerHTML = src2 ? `<img class="dp-logo" src="${src2}" alt="">`
+    : `<div class="dp-logo ph" style="background:linear-gradient(140deg,${t.hex},#222)">${initials(n)}</div>`;
+  const typeEl = el.querySelector(".n-type"); typeEl.textContent = t.label||n.type; typeEl.style.color = t.hex;
+  const codeEl = el.querySelector(".n-code"); codeEl.textContent = n.code; codeEl.style.display = n.code?"":"none";
+  el.querySelector(".dp-name").textContent = n.name;
+  const crumbs = pathOf(id).slice(0,-1).map(p=>p.name);
+  el.querySelector(".dp-crumb").textContent = crumbs.length ? crumbs.join("  ›  ") : "Top of the organization";
+  const cmdEl = el.querySelector(".dp-cmd");
+  if(n.cmd && (n.cmd.name||n.cmd.photo)){
+    const av = n.cmd.photo ? `<img src="${n.cmd.photo}" alt="">` : `<div class="ph2">${(n.cmd.name||"?").trim().charAt(0).toUpperCase()}</div>`;
+    cmdEl.innerHTML = av + `<div><div class="cmd-rank">${esc(n.cmd.rank||"Lead")}</div><div class="cmd-name">${esc(n.cmd.name||"")}</div></div>`;
+    cmdEl.style.display = "flex";
+  } else cmdEl.style.display = "none";
+  const notesEl = el.querySelector(".dp-notes");
+  notesEl.textContent = n.notes || ""; notesEl.style.display = n.notes ? "" : "none";
+  const cnt = descCount(n);
+  el.querySelector(".dp-grid").innerHTML = TYPES.filter(k=>cnt[k]>0).map(k=>`<div class="dp-stat">${pluralLabel(k)}<b>${cnt[k]}</b></div>`).join("")
+    || `<div class="dp-stat" style="grid-column:1/-1">No sub-nodes yet — use ＋ Add to build below this one</div>`;
+  const childT = TYPES[Math.min(TYPES.indexOf(n.type)+1, TYPES.length-1)];
+  el.querySelector(".dp-add").textContent = "＋ Add "+TYPE_META[childT].label;
+  return true;
+}
+
+function openDetails(id){
+  if(panels.has(id)){ const p=panels.get(id); p.el.style.zIndex = ++zTop; return; }
+  if(innerWidth <= 640) closeAllPanels();               // mobile: one bottom sheet at a time
+  const el = document.createElement("aside");
+  el.className = "dpanel"; el.dataset.id = id;
+  el.innerHTML = `
+  <button class="m-x dp-x">✕</button>
+  <div class="dp-grip"><span></span></div>
+  <div class="dp-head"><div class="dp-logoslot"></div><div><div class="dp-kicker"><span class="n-type"></span><span class="n-code"></span></div><div class="dp-name"></div></div></div>
+  <div class="dp-crumb"></div><div class="dp-cmd"></div><div class="dp-notes"></div><div class="dp-grid"></div>
+  <div class="dp-btns"><button class="btn ghost dp-edit" style="padding:10px">✎ Edit unit</button><button class="btn ghost dp-add" style="padding:10px">＋ Add</button></div>`;
+  document.body.appendChild(el);
+  if(!fillPanel(el, id)){ el.remove(); return; }
+  el.style.zIndex = ++zTop;
+  el.querySelector(".dp-x").onclick = ()=>closeDetails(id);
+  el.querySelector(".dp-edit").onclick = ()=>openModal(id);
+  el.querySelector(".dp-add").onclick = ()=>openModal(null, id);
+  makeDraggable(el, id);
+  let ro = null;
+  if(typeof ResizeObserver !== "undefined"){ ro = new ResizeObserver(()=>updateLinks()); ro.observe(el); }
+  panels.set(id, {el, tile:null, ro});
+  if(innerWidth > 640){                                 // anchor beside the clicked unit
+    const p = computeLayout().get(id);
+    if(p){
+      const sx = view.x + p.x*view.s, sy = view.y + p.y*view.s, nw = NW*view.s;
+      const pw = el.offsetWidth, ph = el.offsetHeight;
+      let x = sx + nw + 20;
+      if(x + pw > innerWidth - 12) x = sx - pw - 20;
+      x = Math.max(12, Math.min(x, innerWidth - pw - 12));
+      let y = Math.max(96, Math.min(sy - 14, innerHeight - ph - 12));
+      el.style.left = x+"px"; el.style.top = y+"px";
+    }
+  }
+  domNodes.get(id)?.classList.add("selected");
+  refreshPanelsBar(); updateLinks();
+}
+function closeDetails(id){
+  const p = panels.get(id); if(!p) return;
+  p.ro && p.ro.disconnect();
+  p.el.remove(); panels.delete(id);
+  domNodes.get(id)?.classList.remove("selected");
+  refreshPanelsBar(); updateLinks();
+}
+function closeAllPanels(){ [...panels.keys()].forEach(closeDetails); }
+function refreshPanels(){ for(const [id,p] of [...panels]){ if(!fillPanel(p.el, id)) closeDetails(id); } }
+
+/* ---- drag · Ctrl = snap tiles · Shift = link to source ---- */
+function makeDraggable(el, id){
+  let drag = null;
+  el.addEventListener("pointerdown", e=>{
+    el.style.zIndex = ++zTop;
+    if(innerWidth <= 640) return;
+    if(!e.target.closest(".dp-grip,.dp-head")) return;
+    if(e.target.closest("button,a,input")) return;
+    if(e.shiftKey && !linkMode){ setLinks(true); toast("Panels linked to their nodes — toggle with 🔗 in the panels bar"); }
+    const p = panels.get(id);
+    if(p.tile != null){ p.tile = null; el.classList.remove("tiled"); el.style.width = "392px"; el.style.height = ""; }
+    drag = { dx:e.clientX - el.offsetLeft, dy:e.clientY - el.offsetTop, pid:e.pointerId };
+    el.classList.add("dragging");
+    el.setPointerCapture && el.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  });
+  el.addEventListener("pointermove", e=>{
+    if(!drag || e.pointerId !== drag.pid) return;
+    el.style.left = Math.max(6, Math.min(e.clientX - drag.dx, innerWidth - 130))+"px";
+    el.style.top  = Math.max(70, Math.min(e.clientY - drag.dy, innerHeight - 60))+"px";
+    if(e.ctrlKey){ showTiles(); hotTile(e.clientX, e.clientY); } else hideTiles();
+    updateLinks();
+  });
+  const end = e=>{
+    if(!drag || e.pointerId !== drag.pid) return;
+    drag = null; el.classList.remove("dragging");
+    const z = currentHot; hideTiles();
+    if(z != null) dockPanel(id, z);
+    updateLinks();
+  };
+  el.addEventListener("pointerup", end); el.addEventListener("pointercancel", end);
+}
+
+/* ---- snap tiles ---- */
+let tileZones = [], currentHot = null;
+function computeTiles(){
+  const x0=12, y0=92, gut=12, W=innerWidth-24, H=innerHeight-y0-12;
+  const cols = Math.min(4, Math.max(2, Math.floor(W/430))), rows = 2;
+  const tw = (W - gut*(cols-1))/cols, th = (H - gut)/rows;
+  tileZones = [];
+  for(let r=0;r<rows;r++) for(let c2=0;c2<cols;c2++) tileZones.push({x:x0+c2*(tw+gut), y:y0+r*(th+gut), w:tw, h:th});
+}
+function showTiles(){
+  const ov = $("#tileOverlay");
+  if(ov.classList.contains("show")) return;
+  computeTiles();
+  const used = new Set([...panels.values()].map(p=>p.tile).filter(v=>v!=null));
+  ov.innerHTML = tileZones.map((z,i)=>`<div class="tile${used.has(i)?" busy":""}" data-i="${i}" style="left:${z.x}px;top:${z.y}px;width:${z.w}px;height:${z.h}px"></div>`).join("");
+  ov.classList.add("show");
+}
+function hotTile(mx,my){
+  currentHot = null;
+  $("#tileOverlay").querySelectorAll(".tile").forEach(t=>{
+    const i = +t.dataset.i, z = tileZones[i];
+    const hit = !t.classList.contains("busy") && mx>=z.x && mx<=z.x+z.w && my>=z.y && my<=z.y+z.h;
+    t.classList.toggle("hot", hit);
+    if(hit) currentHot = i;
+  });
+}
+function hideTiles(){ const ov=$("#tileOverlay"); ov.classList.remove("show"); ov.innerHTML=""; currentHot=null; }
+function dockPanel(id, i){
+  computeTiles();
+  const z = tileZones[i], p = panels.get(id); if(!z || !p) return;
+  p.tile = i; p.el.classList.add("tiled");
+  Object.assign(p.el.style, {left:z.x+"px", top:z.y+"px", width:z.w+"px", height:z.h+"px"});
+  updateLinks();
+}
+addEventListener("resize", ()=>{ if(![...panels.values()].some(p=>p.tile!=null)) return;
+  computeTiles(); panels.forEach((p,id)=>{ if(p.tile!=null) dockPanel(id, p.tile); }); });
+
+/* ---- link lines panel → unit ---- */
+function setLinks(on){
+  linkMode = on;
+  document.body.classList.toggle("linksOn", on);
+  $("#pbLinks").classList.toggle("on", on);
+  updateLinks();
+}
+function updateLinks(){
+  if(!linkMode) return;
+  let out = "";
+  panels.forEach((p,id)=>{
+    const lp = lastPos && lastPos.get(id); if(!lp) return;
+    const nx = view.x + (lp.x+NW/2)*view.s, ny = view.y + (lp.y+NH/2)*view.s;
+    const r = p.el.getBoundingClientRect();
+    let ax, ay;
+    if(nx < r.left){ ax = r.left; ay = Math.min(Math.max(ny, r.top+18), r.bottom-18); }
+    else if(nx > r.right){ ax = r.right; ay = Math.min(Math.max(ny, r.top+18), r.bottom-18); }
+    else { ay = ny < r.top ? r.top : r.bottom; ax = Math.min(Math.max(nx, r.left+18), r.right-18); }
+    const mx = (nx+ax)/2;
+    out += `<path d="M ${nx} ${ny} C ${mx} ${ny}, ${mx} ${ay}, ${ax} ${ay}"/><circle cx="${nx}" cy="${ny}" r="4"/>`;
+  });
+  $("#linkLayer").innerHTML = out;
+}
+
+/* ---- panels bar ---- */
+function setFocusBoard(on){ focusBoard = on; document.body.classList.toggle("focusBoard", on); $("#pbFocus").classList.toggle("on", on); }
+function refreshPanelsBar(){
+  $("#pbCount").textContent = panels.size + (panels.size===1 ? " panel" : " panels");
+  $("#panelsBar").classList.toggle("show", panels.size>0 && !drawMode);
+  if(!panels.size){ setLinks(false); setFocusBoard(false); }
+}
+$("#pbFocus").onclick = ()=>setFocusBoard(!focusBoard);
+$("#pbLinks").onclick = ()=>setLinks(!linkMode);
+$("#pbClose").onclick = closeAllPanels;
+$("#pbPrint").onclick = ()=>exportPanelsPDF();
+
+/* ---- PDF of only the open panels ---- */
+function exportPanelsPDF(){
+  if(!panels.size){ toast("Open some node panels first"); return; }
+  const today = new Date().toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"});
+  const cards = [...panels.keys()].map(id=>{
+    const f = findNode(id); if(!f) return "";
+    const n = f.node, t = TYPE_META[n.type]||{};
+    const cnt = descCount(n);
+    const stats = TYPES.filter(k=>cnt[k]>0).map(k=>`<span class="pp-stat">${esc(pluralLabel(k))} <b>${cnt[k]}</b></span>`).join("");
+    const lg = logoSrc(n);
+    return `<div class="pp-card" style="--pc:${t.hex}">
+      <div class="pp-khead">${lg?`<img class="lg" src="${lg}" alt="">`:""}<div>
+        <div class="pp-type" style="color:${t.hex}">${esc(t.label||n.type)}${n.code?` · ${esc(n.code)}`:""}</div>
+        <div class="pp-name">${esc(n.name)}</div></div></div>
+      <div class="pp-crumb">${pathOf(id).slice(0,-1).map(p=>esc(p.name)).join("  ›  ")||"Top of the organization"}</div>
+      ${n.cmd&&(n.cmd.name||n.cmd.photo)?`<div class="pp-cmd">${n.cmd.photo?`<img src="${n.cmd.photo}" alt="">`:""}<div><div class="pp-cmdr">${esc(n.cmd.rank||"Lead")}</div><div class="pp-cmdn">${esc(n.cmd.name||"")}</div></div></div>`:""}
+      ${n.notes?`<div class="pp-notes">${esc(n.notes)}</div>`:""}
+      ${stats?`<div class="pp-stats">${stats}</div>`:""}
+    </div>`;
+  }).join("");
+  $("#printArea").innerHTML = `<div class="pp-wrap">
+    <div class="pp-head"><img src="${logoSrc(root)||LOGOS.brand}" alt=""><div><div class="pp-title">${esc(root.name)} — Node Briefs</div>
+    <div class="pp-sub">${panels.size} selected node${panels.size===1?"":"s"} · ${today}</div></div></div>
+    <div class="pp-grid">${cards}</div>
+    <div class="rp-foot">Generated with Organogram Builder · ${today}</div></div>`;
+  toast("In the print dialog, choose “Save as PDF”");
+  setTimeout(()=>window.print(), 300);
+}
+
+/* ================= INK · PEN & MARKER KIT ================= */
+let drawMode = false, ink = [], inkLive = null;
+const inkTool = { color:"#E8B33C", w:4, eraser:false, shape:"pen" };
+const INK_COLORS = ["#E8B33C","#E0483E","#3DD6C3","#4CC272","#8B7CF6","#F2F5FC"];
+const inkSvg = $("#inkLayer");
+const r1 = v => Math.round(v*10)/10;
+function arrowHead(x1,y1,x2,y2,w){
+  const a=Math.atan2(y2-y1,x2-x1), L=9+w*1.7, d=0.5;
+  return `M ${r1(x2-L*Math.cos(a-d))} ${r1(y2-L*Math.sin(a-d))} L ${x2} ${y2} L ${r1(x2-L*Math.cos(a+d))} ${r1(y2-L*Math.sin(a+d))}`;
+}
+function strokePath(s){
+  const t=s.t||"pen", w=s.w, c=s.c;
+  if(t==="pen") return `<path d="M ${s.p.map(pt=>pt.join(" ")).join(" L ")}" stroke="${c}" stroke-width="${w}"/>`;
+  const [x1,y1]=s.p[0], [x2,y2]=s.p[1];
+  if(t==="line")  return `<path d="M ${x1} ${y1} L ${x2} ${y2}" stroke="${c}" stroke-width="${w}"/>`;
+  if(t==="arrow") return `<path d="M ${x1} ${y1} L ${x2} ${y2} ${arrowHead(x1,y1,x2,y2,w)}" stroke="${c}" stroke-width="${w}"/>`;
+  if(t==="rect"){ const x=Math.min(x1,x2),y=Math.min(y1,y2); return `<rect x="${x}" y="${y}" width="${Math.abs(x2-x1)}" height="${Math.abs(y2-y1)}" rx="7" fill="none" stroke="${c}" stroke-width="${w}"/>`; }
+  if(t==="ellipse") return `<ellipse cx="${r1((x1+x2)/2)}" cy="${r1((y1+y2)/2)}" rx="${r1(Math.abs(x2-x1)/2)}" ry="${r1(Math.abs(y2-y1)/2)}" fill="none" stroke="${c}" stroke-width="${w}"/>`;
+  return "";
+}
+function inkVisible(s){ return (s.t||"pen")==="pen" ? s.p.length>1 : true; }
+function renderInk(){
+  inkSvg.innerHTML = ink.map(strokePath).join("") + (inkLive && !inkLive.erasing && inkVisible(inkLive.s) ? strokePath(inkLive.s) : "");
+}
+const SHAPES = [["pen","✎","Pen"],["line","╱","Line"],["arrow","↗","Arrow"],["rect","▢","Rectangle"],["ellipse","◯","Ellipse"]];
+function paintInkBar(){
+  $("#inkSwatches").innerHTML = INK_COLORS.map(c2=>`<button class="swatch${inkTool.color===c2&&!inkTool.eraser?" on":""}" data-c="${c2}" style="background:${c2}" title="Colour"></button>`).join("");
+  document.querySelectorAll("#inkBar .ink-w").forEach(b=>b.classList.toggle("on", +b.dataset.w===inkTool.w));
+  document.querySelectorAll("#inkBar .shape").forEach(b=>b.classList.toggle("on", (inkTool.shape||"pen")===b.dataset.shape && !inkTool.eraser));
+  $("#inkEraser").classList.toggle("on", inkTool.eraser);
+  document.body.classList.toggle("erasing", drawMode && inkTool.eraser);
+}
+$("#inkSwatches").addEventListener("click", e=>{
+  const b = e.target.closest(".swatch"); if(!b) return;
+  inkTool.color = b.dataset.c; inkTool.eraser = false; paintInkBar();
+});
+document.querySelectorAll("#inkBar .ink-w").forEach(b=>b.onclick = ()=>{ inkTool.w = +b.dataset.w; inkTool.eraser = false; paintInkBar(); });
+document.querySelectorAll("#inkBar .shape").forEach(b=>b.onclick = ()=>{ inkTool.shape = b.dataset.shape; inkTool.eraser = false; paintInkBar(); });
+$("#inkEraser").onclick = ()=>{ inkTool.eraser = !inkTool.eraser; paintInkBar(); };
+$("#inkUndo").onclick = ()=>{ ink.pop(); renderInk(); save(); };
+$("#inkClear").onclick = ()=>{ if(!ink.length) return; if(confirm("Wipe everything off the whiteboard?")){ ink = []; renderInk(); save(); } };
+$("#inkDone").onclick = ()=>exitInk();
+function enterInk(){
+  drawMode = true; document.body.classList.add("drawmode");
+  $("#inkBar").classList.add("show"); paintInkBar(); refreshPanelsBar();
+  toast("Whiteboard on — pick a pen, shape or arrow. The wheel still zooms.");
+}
+function exitInk(){
+  drawMode = false; inkTool.eraser = false;
+  document.body.classList.remove("drawmode","erasing");
+  $("#inkBar").classList.remove("show"); refreshPanelsBar();
+}
+$("#inkBtn").onclick = ()=>drawMode ? exitInk() : enterInk();
+function strokeHit(s, wx, wy, th){
+  if((s.t||"pen")==="pen") return s.p.some(pt=>Math.hypot(pt[0]-wx, pt[1]-wy) < th + s.w);
+  const [a,b]=s.p;
+  return wx>=Math.min(a[0],b[0])-th && wx<=Math.max(a[0],b[0])+th && wy>=Math.min(a[1],b[1])-th && wy<=Math.max(a[1],b[1])+th;
+}
+function eraseAt(wx, wy){
+  const th = 12/view.s, before = ink.length;
+  ink = ink.filter(s=>!strokeHit(s, wx, wy, th));
+  if(ink.length !== before){ renderInk(); save(); }
+}
+
+/* ================= STATS ================= */
+function renderStats(){
+  const c = descCount(root); let total = 1; for(const k in c) total += c[k];
+  const chips = TYPES.filter(t=>c[t]>0).map(t=>`<span class="stat${levelFilter===t?" active":""}" data-t="${t}" title="Show down to ${esc(TYPE_META[t].label.toLowerCase())}"><span class="dot" style="background:${TYPE_META[t].hex}"></span>${esc(pluralLabel(t))} <b>${c[t]}</b></span>`).join("");
+  $("#stats").innerHTML = chips + `<span class="stat${levelFilter?"":" active"}" data-t="" title="Back to your saved view">Total <b>${total}</b></span>`;
+}
+$("#stats").addEventListener("click", e=>{
+  const chip = e.target.closest(".stat"); if(!chip) return;
+  const t = chip.dataset.t || null;
+  levelFilter = (levelFilter===t) ? null : t;
+  revealPath.clear();
+  render(); fitView();
+});
+
+/* ================= PAN & ZOOM ================= */
+function applyView(){
+  worldEl.style.transform = `translate(${view.x}px,${view.y}px) scale(${view.s})`;
+  $("#zoomPct").textContent = Math.round(view.s*100)+"%";
+  updateLinks();
+}
+function zoomAt(cx, cy, factor){
+  const ns = Math.min(2.5, Math.max(0.08, view.s*factor));
+  view.x = cx - (cx-view.x)*(ns/view.s);
+  view.y = cy - (cy-view.y)*(ns/view.s);
+  view.s = ns; clampView(false);
+}
+function viewBounds(){
+  const pad = 70, top = document.body.classList.contains("presenting") ? 30 : 96;
+  const {minX,minY,maxX,maxY} = lastBBox, s = view.s;
+  const cmdPad = showCmd ? 70 : 0;
+  // when content is smaller than the viewport these naturally swap, giving free
+  // movement anywhere that keeps the chart fully visible — no sticky trap
+  const ax = pad - minX*s,                bx = innerWidth  - pad - maxX*s;
+  const ay = top + cmdPad - minY*s,       by = innerHeight - pad - maxY*s;
+  return { loX:Math.min(ax,bx), hiX:Math.max(ax,bx), loY:Math.min(ay,by), hiY:Math.max(ay,by) };
+}
+const rubberVal = (v,lo,hi) => v < lo ? lo+(v-lo)*0.3 : v > hi ? hi+(v-hi)*0.3 : v;
+function clampView(animate){
+  if(!lastBBox){ applyView(); return; }
+  const b = viewBounds();
+  view.x = Math.min(b.hiX, Math.max(b.loX, view.x));
+  view.y = Math.min(b.hiY, Math.max(b.loY, view.y));
+  if(animate){
+    worldEl.style.transition = "transform .55s cubic-bezier(.18,1.35,.35,1)";   // iOS-style spring back
+    applyView();
+    setTimeout(()=>worldEl.style.transition="", 560);
+  } else applyView();
+}
+vpEl.addEventListener("wheel", e=>{
+  e.preventDefault();
+  if(e.ctrlKey || !e.deltaMode && Math.abs(e.deltaY)<60 && e.deltaX===0 && !Number.isInteger(e.deltaY)){
+    zoomAt(e.clientX, e.clientY, Math.pow(1.012, -e.deltaY));      // trackpad pinch / fine wheel
+  } else if(e.shiftKey){
+    view.x -= e.deltaY; clampView(false);
+  } else {
+    zoomAt(e.clientX, e.clientY, e.deltaY>0 ? 0.88 : 1.14);        // mouse wheel
+  }
+},{passive:false});
+
+const pointers = new Map(); let pinchD=0, panStart=null;
+vpEl.addEventListener("pointerdown", e=>{
+  if(drawMode){
+    if(e.target.closest(".dpanel,#inkBar,#panelsBar,#topbar,#dock,#detailPanel")) return;
+    const wx=(e.clientX-view.x)/view.s, wy=(e.clientY-view.y)/view.s;
+    if(inkTool.eraser){ inkLive={erasing:true, pid:e.pointerId}; eraseAt(wx,wy); }
+    else { const shape = inkTool.shape||"pen";
+      inkLive = { pid:e.pointerId, shape, s:{ t:shape, c:inkTool.color, w:inkTool.w,
+        p: shape==="pen" ? [[r1(wx),r1(wy)]] : [[r1(wx),r1(wy)],[r1(wx),r1(wy)]] } }; }
+    vpEl.setPointerCapture && vpEl.setPointerCapture(e.pointerId);
+    return;
+  }
+  if(e.target.closest(".node")) { if(e.pointerType!=="touch") return; }
+  pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pointers.size===1){ panStart={x:e.clientX-view.x, y:e.clientY-view.y, moved:false}; vpEl.classList.add("panning"); }
+  if(pointers.size===2){ const p=[...pointers.values()]; pinchD=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y); panStart=null; }
+});
+vpEl.addEventListener("pointermove", e=>{
+  if(inkLive && e.pointerId===inkLive.pid){
+    const wx=(e.clientX-view.x)/view.s, wy=(e.clientY-view.y)/view.s;
+    if(inkLive.erasing) eraseAt(wx,wy);
+    else if((inkLive.shape||"pen")==="pen"){ inkLive.s.p.push([r1(wx),r1(wy)]); renderInk(); }
+    else { inkLive.s.p[1] = [r1(wx),r1(wy)]; renderInk(); }
+    return;
+  }
+  if(!pointers.has(e.pointerId)) return;
+  pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pointers.size===1 && panStart){
+    const nx=e.clientX-panStart.x, ny=e.clientY-panStart.y;
+    if(Math.abs(nx-view.x)+Math.abs(ny-view.y)>2) panStart.moved=true;
+    if(lastBBox){ const b = viewBounds(); view.x = rubberVal(nx,b.loX,b.hiX); view.y = rubberVal(ny,b.loY,b.hiY); }
+    else { view.x=nx; view.y=ny; }
+    applyView();
+  } else if(pointers.size===2){
+    const p=[...pointers.values()];
+    const d=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);
+    const cx=(p[0].x+p[1].x)/2, cy=(p[0].y+p[1].y)/2;
+    if(pinchD>0) zoomAt(cx,cy,d/pinchD);
+    pinchD=d;
+  }
+});
+const endPtr = e=>{
+  if(inkLive && e.pointerId===inkLive.pid){
+    if(!inkLive.erasing){
+      const s=inkLive.s, isPen=(inkLive.shape||"pen")==="pen";
+      const moved = isPen ? s.p.length>1 : Math.hypot(s.p[1][0]-s.p[0][0], s.p[1][1]-s.p[0][1]) > 3/view.s;
+      if(moved){ ink.push(s); save(); }
+    }
+    inkLive=null; renderInk(); return;
+  }
+  pointers.delete(e.pointerId); if(pointers.size<2) pinchD=0; if(pointers.size===0){ panMoved = !!(panStart&&panStart.moved); panStart=null; vpEl.classList.remove("panning"); clampView(true); } };
+vpEl.addEventListener("pointerup", endPtr); vpEl.addEventListener("pointercancel", endPtr); vpEl.addEventListener("pointerleave", endPtr);
+
+function fitView(pad=70){
+  const pos = computeLayout();
+  let minX=1e9,minY=1e9,maxX=-1e9,maxY=-1e9;
+  for(const [,p] of pos){ minX=Math.min(minX,p.x); minY=Math.min(minY,p.y); maxX=Math.max(maxX,p.x+NW); maxY=Math.max(maxY,p.y+NH); }
+  const vw=innerWidth, vh=innerHeight, topPad = document.body.classList.contains("presenting")?pad:pad+62;
+  const s = Math.min(1, Math.max(0.08, Math.min((vw-pad*2)/(maxX-minX), (vh-topPad-pad)/(maxY-minY))));   // open at 100%, never beyond
+  view.s=s; view.x=(vw-(maxX-minX)*s)/2 - minX*s; view.y=topPad+((vh-topPad-pad)-(maxY-minY)*s)/2 - minY*s;
+  applyView();
+}
+function centerOn(id, scale){
+  const pos = computeLayout(); const p = pos.get(id); if(!p) return;
+  if(scale) view.s=scale;
+  view.x = innerWidth/2 - (p.x+NW/2)*view.s;
+  view.y = innerHeight/2 - (p.y+NH/2)*view.s;
+  worldEl.style.transition="transform .5s cubic-bezier(.22,1,.36,1)";
+  applyView();
+  setTimeout(()=>worldEl.style.transition="",520);
+}
+$("#zin").onclick = ()=>zoomAt(innerWidth/2,innerHeight/2,1.25);
+$("#zout").onclick = ()=>zoomAt(innerWidth/2,innerHeight/2,0.8);
+$("#fitBtn").onclick = ()=>fitView();
+$("#centerBtn").onclick = ()=>centerOn(root.id,1);
+
+/* ================= CRUD MODAL ================= */
+let fLogoVal = "", fTypeVal = "team", addUnderId = null;
+const overlay = $("#overlay");
+
+function buildParentSelect(excludeId){
+  const sel = $("#fParent"); sel.innerHTML = "";
+  forEach(root,(n,parent,depth)=>{
+    if(excludeId && (n.id===excludeId || isDescendant(n.id, findNode(excludeId).node))) return;
+    const o = document.createElement("option");
+    o.value = n.id; o.textContent = "  ".repeat(depth) + (n.code? n.code+" · ":"") + n.name;
+    sel.appendChild(o);
+  });
+}
+function buildTypeGrid(){
+  $("#fType").innerHTML = TYPES.map(t=>`<button data-t="${t}" style="--ac:${TYPE_META[t].hex}">${TYPE_META[t].label}</button>`).join("");
+  $("#fType").querySelectorAll("button").forEach(b=>{
+    b.onclick = ()=>{ fTypeVal=b.dataset.t; paintTypeGrid();
+      if(!editingId) $("#mTitle").textContent = "New "+TYPE_META[fTypeVal].label; };
+  });
+}
+function paintTypeGrid(){
+  $("#fType").querySelectorAll("button").forEach(b=>{
+    const on = b.dataset.t===fTypeVal;
+    b.classList.toggle("on",on);
+    b.style.background = on ? TYPE_META[b.dataset.t].hex : "";
+  });
+}
+function paintLogoPrev(){
+  const img = $("#fLogoPrev");
+  const src = fLogoVal ? (LOGOS[fLogoVal]||fLogoVal) : "";
+  if(src){ img.src=src; img.style.opacity=1; } else { img.removeAttribute("src"); img.style.opacity=.25; }
+}
+function openModal(id, underId){
+  editingId = id; addUnderId = underId||null;
+  const editing = !!id;
+  let n = editing ? findNode(id).node : null;
+  $("#mTitle").textContent = editing ? "Edit node" : "New node";
+  $("#mSub").textContent = editing ? pathOf(id).slice(0,-1).map(p=>p.name).join(" › ") : "Under: "+(findNode(underId)?.node.name||"");
+  $("#fName").value = n? n.name : "";
+  $("#fCode").value = n? n.code : "";
+  $("#fNotes").value = n? n.notes : "";
+  fLogoVal = n? n.logo : "";
+  $("#fCmdRank").value = n&&n.cmd ? (n.cmd.rank||"") : "";
+  $("#fCmdName").value = n&&n.cmd ? (n.cmd.name||"") : "";
+  fCmdVal = n&&n.cmd ? (n.cmd.photo||"") : "";
+  const parentNode = editing ? findNode(id).parent : findNode(underId).node;
+  if(editing && !parentNode){ $("#fParent").innerHTML = `<option value="">— root —</option>`; $("#fParent").disabled = true; }
+  else { $("#fParent").disabled = false; buildParentSelect(editing? id : null); $("#fParent").value = parentNode.id; }
+  if(editing) fTypeVal = n.type;
+  else { const pt = findNode(underId).node.type; fTypeVal = TYPES[Math.min(TYPES.indexOf(pt)+1, TYPES.length-1)]; }
+  paintTypeGrid(); paintLogoPrev(); paintCmdPrev();
+  $("#mTitle").textContent = editing ? "Edit node" : "New "+(TYPE_META[fTypeVal]?.label||"node");
+  $("#mDelete").style.display = (editing && id!==root.id) ? "" : "none";
+  overlay.classList.add("open");
+  setTimeout(()=>$("#fName").focus(),60);
+}
+function closeModal(){ overlay.classList.remove("open"); editingId=null; addUnderId=null; }
+$("#mClose").onclick = $("#mCancel").onclick = closeModal;
+overlay.addEventListener("click", e=>{ if(e.target===overlay) closeModal(); });
+
+$("#fLogoUp").onclick = ()=>$("#fLogoFile").click();
+$("#fLogoClear").onclick = ()=>{ fLogoVal=""; paintLogoPrev(); };
+$("#fLogoFile").addEventListener("change", e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const rd = new FileReader();
+  rd.onload = ()=>{ shrinkImage(rd.result, 160, du=>{ fLogoVal=du; paintLogoPrev(); }); };
+  rd.readAsDataURL(f); e.target.value="";
+});
+let fCmdVal = "";
+function paintCmdPrev(){
+  const img = $("#fCmdPrev");
+  if(fCmdVal){ img.src = fCmdVal; img.style.opacity = 1; } else { img.removeAttribute("src"); img.style.opacity = .25; }
+}
+$("#fCmdUp").onclick = ()=>$("#fCmdFile").click();
+$("#fCmdClear").onclick = ()=>{ fCmdVal=""; paintCmdPrev(); };
+$("#fCmdFile").addEventListener("change", e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const rd = new FileReader();
+  rd.onload = ()=>{ shrinkImage(rd.result, 140, du=>{ fCmdVal=du; paintCmdPrev(); }); };
+  rd.readAsDataURL(f); e.target.value="";
+});
+function shrinkImage(dataUrl, max, cb){
+  const img = new Image();
+  img.onload = ()=>{
+    const k = Math.min(1, max/Math.max(img.width,img.height));
+    const c = document.createElement("canvas");
+    c.width = Math.round(img.width*k); c.height = Math.round(img.height*k);
+    c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+    cb(c.toDataURL("image/png"));
+  };
+  img.onerror = ()=>cb(dataUrl);
+  img.src = dataUrl;
+}
+
+$("#mSave").onclick = ()=>{
+  const name = $("#fName").value.trim();
+  if(!name){ toast("A name is required"); $("#fName").focus(); return; }
+  const vals = { name, code:$("#fCode").value.trim(), notes:$("#fNotes").value.trim(), type:fTypeVal, logo:fLogoVal };
+  const cmd = { rank:$("#fCmdRank").value.trim(), name:$("#fCmdName").value.trim(), photo:fCmdVal };
+  vals.cmd = (cmd.rank||cmd.name||cmd.photo) ? cmd : null;
+  if(editingId){
+    const {node,parent} = findNode(editingId);
+    Object.assign(node, vals);
+    const wantParent = $("#fParent").value;
+    if(parent && wantParent && wantParent!==parent.id){ moveNode(editingId, wantParent); }
+    toast("Saved · "+node.name);
+  } else {
+    const child = N(vals.name, vals.type, vals); child.children=[];
+    const target = findNode($("#fParent").value || addUnderId).node;
+    target.children = target.children||[]; target.children.push(child);
+    collapsed.delete(target.id);
+    toast("Added · "+child.name);
+  }
+  closeModal(); render();
+};
+function moveNode(id, newParentId){
+  const {node,parent} = findNode(id);
+  if(!parent || id===newParentId || isDescendant(newParentId, node)) return false;
+  parent.children = parent.children.filter(c=>c.id!==id);
+  const np = findNode(newParentId).node;
+  np.children = np.children||[]; np.children.push(node);
+  collapsed.delete(newParentId);
+  return true;
+}
+function askDelete(id){
+  const {node} = findNode(id);
+  if(id===root.id){ toast("The root node can't be deleted"); return; }
+  let cnt=0; forEach(node,()=>cnt++);
+  pendingDelete = id;
+  $("#mTitle").textContent = "Delete node?";
+  if(confirmDelete(node,cnt)) return;
+}
+let pendingDelete=null;
+function confirmDelete(node,cnt){
+  // lightweight inline confirm via toast-style action
+  const ok = window.confirm ? window.confirm(`Delete "${node.name}"${cnt>1? " and "+(cnt-1)+" child node(s)":""}? This cannot be undone.`) : true;
+  if(ok){
+    const {parent} = findNode(node.id);
+    parent.children = parent.children.filter(c=>c.id!==node.id);
+    closeModal(); toast("Deleted · "+node.name); render();
+  }
+  return true;
+}
+$("#mDelete").onclick = ()=>{ if(editingId) askDelete(editingId); };
+
+/* ================= CONNECT MODE (n8n-style re-parent) ================= */
+function startConnect(id){
+  if(id===root.id){ toast("The root node can't be reconnected"); return; }
+  connectingId = id;
+  $("#connName").textContent = findNode(id).node.name;
+  $("#connectBanner").classList.add("on");
+  render();
+}
+function finishConnect(targetId){
+  if(!connectingId) return;
+  if(targetId===connectingId){ toast("Pick a different node as the parent"); return; }
+  const src = findNode(connectingId).node;
+  if(isDescendant(targetId, src)){ toast("Can't connect a node to its own descendant"); return; }
+  const ok = moveNode(connectingId, targetId);
+  const sName = src.name, tName = findNode(targetId).node.name;
+  cancelConnect();
+  if(ok){ toast(`Connected · ${sName} → ${tName}`); render(); }
+}
+function cancelConnect(){ connectingId=null; $("#connectBanner").classList.remove("on"); render(); }
+$("#connCancel").onclick = cancelConnect;
+
+/* ================= SEARCH ================= */
+const searchEl = $("#search"), resultsEl = $("#results");
+let resIdx = -1, resIds = [];
+function doSearch(q){
+  q = q.trim().toLowerCase();
+  resultsEl.innerHTML=""; resIdx=-1; resIds=[];
+  if(!q){ resultsEl.classList.remove("open"); searchHits=null; render(); return; }
+  const hits=[];
+  forEach(root,n=>{
+    if(n.name.toLowerCase().includes(q) || (n.code&&n.code.toLowerCase().includes(q)) || (n.notes&&n.notes.toLowerCase().includes(q)))
+      hits.push(n);
+  });
+  // dim non-matches (keep ancestors of hits visible)
+  searchHits = new Set();
+  hits.forEach(h=>pathOf(h.id).forEach(p=>searchHits.add(p.id)));
+  render();
+  if(!hits.length){ resultsEl.innerHTML = `<div class="r-empty">No units match “${q}”. Try a code or part of a name.</div>`; }
+  else {
+    resultsEl.innerHTML = hits.slice(0,40).map(h=>{
+      const crumbs = pathOf(h.id).slice(0,-1).map(p=>p.name).slice(-2).join(" › ");
+      return `<div class="r-item" data-id="${h.id}">
+        <span class="r-dot" style="background:${TYPE_META[h.type].hex}"></span>
+        <span class="r-name">${h.code?`<b>${h.code}</b> `:""}${h.name} <small>· ${crumbs}</small></span>
+        <span class="r-type">${TYPE_META[h.type].label}</span></div>`;
+    }).join("");
+    resIds = hits.slice(0,40).map(h=>h.id);
+    resultsEl.querySelectorAll(".r-item").forEach(it=>it.onclick=()=>gotoNode(it.dataset.id));
+  }
+  resultsEl.classList.add("open");
+}
+function gotoNode(id){
+  levelFilter = null;
+  revealPath = new Set(pathOf(id).map(p=>p.id));   // open only this chain — siblings stay tucked away
+  resultsEl.classList.remove("open"); searchHits=null; searchEl.value="";
+  render();
+  centerOn(id, Math.max(view.s, .85));
+  const el = domNodes.get(id);
+  if(el){ el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); }
+}
+searchEl.addEventListener("input", e=>doSearch(e.target.value));
+searchEl.addEventListener("keydown", e=>{
+  if(e.key==="Escape"){ searchEl.value=""; doSearch(""); searchEl.blur(); }
+  if(e.key==="ArrowDown"||e.key==="ArrowUp"){
+    e.preventDefault();
+    resIdx = (resIdx + (e.key==="ArrowDown"?1:-1) + resIds.length) % (resIds.length||1);
+    resultsEl.querySelectorAll(".r-item").forEach((it,i)=>it.classList.toggle("sel",i===resIdx));
+    resultsEl.querySelectorAll(".r-item")[resIdx]?.scrollIntoView({block:"nearest"});
+  }
+  if(e.key==="Enter" && resIds.length){ gotoNode(resIds[Math.max(0,resIdx)]); }
+});
+document.addEventListener("click", e=>{ if(!e.target.closest("#searchwrap")) resultsEl.classList.remove("open"); });
+document.addEventListener("keydown", e=>{
+  if(e.key==="/" && !e.target.closest("input,textarea,select")){ e.preventDefault(); searchEl.focus(); }
+  if(e.key==="Escape"){
+    if(drawMode) exitInk();
+    else if(connectingId) cancelConnect();
+    else if(overlay.classList.contains("open")) closeModal();
+    else if(panels.size) closeDetails([...panels.keys()].pop());
+    else if(document.body.classList.contains("presenting")) exitPresentation();
+  }
+});
+
+/* ================= EXPORT ================= */
+function flatRows(){
+  const rows=[];
+  forEach(root,(n,parent,depth)=>{
+    rows.push({depth, type:TYPE_META[n.type]?.label||n.type, code:n.code, name:n.name,
+      cmd:(n.cmd&&n.cmd.name)?((n.cmd.rank?n.cmd.rank+" ":"")+n.cmd.name):"",
+      parent:parent?parent.name:"", path:pathOf(n.id).map(p=>p.name).join(" › "), notes:n.notes});
+  });
+  return rows;
+}
+function download(blob, filename){
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=filename;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),3000);
+}
+const esc = s => String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+function exportExcel(){
+  const rows = flatRows();
+  const head = ["Depth","Level","Code","Name","Lead","Parent","Full path","Notes"];
+  const html = `<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="UTF-8">
+    <style>td,th{border:.5pt solid #999;padding:3pt 6pt;font:10pt Calibri}th{background:#1F2A44;color:#fff;font-weight:bold}</style></head><body>
+    <table><tr>${head.map(h=>`<th>${h}</th>`).join("")}</tr>
+    ${rows.map(r=>`<tr><td>${r.depth}</td><td>${esc(r.type)}</td><td style="mso-number-format:'\\@'">${esc(r.code)}</td><td>${"&nbsp;&nbsp;".repeat(r.depth)}${esc(r.name)}</td><td>${esc(r.cmd)}</td><td>${esc(r.parent)}</td><td>${esc(r.path)}</td><td>${esc(r.notes)}</td></tr>`).join("")}
+    </table></body></html>`;
+  download(new Blob(["\ufeff",html],{type:"application/vnd.ms-excel"}), "organogram.xls");
+  toast("Exported Excel workbook");
+}
+function exportCSV(){
+  const rows = flatRows();
+  const q = s=>`"${String(s??"").replace(/"/g,'""')}"`;
+  const csv = "Depth,Level,Code,Name,Lead,Parent,Full path,Notes\n" +
+    rows.map(r=>[r.depth,r.type,r.code,r.name,r.cmd,r.parent,r.path,r.notes].map(q).join(",")).join("\n");
+  download(new Blob(["\ufeff",csv],{type:"text/csv;charset=utf-8"}), "organogram.csv");
+  toast("Exported CSV");
+}
+function exportJSON(){
+  download(new Blob([JSON.stringify({app:"Organogram Builder",v:3,exported:new Date().toISOString(),root,collapsed:[...collapsed],ink,labels,layout},null,2)],{type:"application/json"}), "organogram-backup.json");
+  toast("Backup saved");
+}
+$("#importFile").addEventListener("change", e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const rd=new FileReader();
+  rd.onload=()=>{ try{
+      const d=JSON.parse(rd.result); const r=d.root||d;
+      if(!r||!r.name||!r.type) throw 0;
+      adoptData(r, d.collapsed, d.ink, d.labels, d.layout); toast("Backup restored");
+    }catch(err){ toast("That file isn't a valid backup"); } };
+  rd.readAsText(f); e.target.value="";
+});
+const exportMenu = $("#exportMenu");
+$("#exportBtn").onclick = e=>{ e.stopPropagation(); exportMenu.classList.toggle("open"); };
+document.addEventListener("click", e=>{ if(!e.target.closest(".menu-wrap")) exportMenu.classList.remove("open"); });
+exportMenu.addEventListener("click", e=>{
+  const x = e.target.closest("button")?.dataset.x; if(!x) return;
+  exportMenu.classList.remove("open");
+  if(x==="excel") exportExcel();
+  else if(x==="csv") exportCSV();
+  else if(x==="pdf") exportPDF();
+  else if(x==="pptx") exportPPTX();
+  else if(x==="json") exportJSON();
+  else if(x==="restore") $("#importFile").click();
+  else if(x==="importsheet") $("#sheetFile").click();
+  else if(x==="linkdb"){ fileState==="off" ? linkDatabaseFile() : unlinkDatabaseFile(); }
+  else if(x==="template") openTemplates();
+  else if(x==="levels") openLevelsModal();
+  else if(x==="sample"){ if(confirm("Replace your current chart with the sample organization?")){ adoptData(defaultData()); toast("Loaded sample data"); } }
+  else if(x==="blank"){ if(confirm("Clear everything and start from a blank organization? This wipes your current chart.")){ labels=null; applyLabels(null); adoptData(blankData()); toast("Cleared — start building"); } }
+});
+
+
+/* ================= PDF REPORT (print → Save as PDF) ================= */
+function cmdLine(n){ return (n.cmd && n.cmd.name) ? ((n.cmd.rank? n.cmd.rank+" · ":"") + n.cmd.name) : ""; }
+function pdfBranch(n, depth){
+  const meta = TYPE_META[n.type]||{}, lc = cmdLine(n);
+  const row = `<div class="rp-row" style="margin-left:${depth*15}px;border-left-color:${meta.hex||'#888'}">
+      <span class="rp-row-t" style="color:${meta.hex||'#888'}">${esc(meta.label||n.type)}</span>${n.code?`<span class="rp-row-c">${esc(n.code)}</span>`:""}<span class="rp-row-n">${esc(n.name)}</span>${lc?`<span class="rp-row-l"> · ${esc(lc)}</span>`:""}${n.notes?`<div class="rp-row-note">${esc(n.notes)}</div>`:""}
+    </div>`;
+  return row + (n.children||[]).map(c=>pdfBranch(c, depth+1)).join("");
+}
+function exportPDF(){
+  const today = new Date().toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"});
+  const cnt = descCount(root), total = Object.values(cnt).reduce((a,b)=>a+b,0)+1;
+  const lead = (n,big)=> (n&&n.cmd&&(n.cmd.name||n.cmd.photo)) ? `
+    <div class="rp-lead${big?" big":""}">
+      ${n.cmd.photo?`<img src="${n.cmd.photo}" alt="">`:`<div class="rp-leadph">${(n.cmd.name||"?").charAt(0)}</div>`}
+      <div><div class="rp-leadrank">${esc(n.cmd.rank||"Lead")}</div>
+      <div class="rp-leadname">${esc(n.cmd.name||"")}</div>
+      <div class="rp-leadunit">${esc(n.name)}</div></div>
+    </div>` : "";
+  const tops = root.children||[];
+  const sections = tops.map((t,i)=>`
+    <section class="rp-sec" id="sec${i}">
+      <div class="rp-fhead">
+        ${logoSrc(t)?`<img class="rp-flogo" src="${logoSrc(t)}" alt="">`:""}
+        <div class="rp-ftitle"><div class="rp-feyebrow">${esc(TYPE_META[t.type]?.label||t.type)} ${String(i+1).padStart(2,"0")} / ${String(tops.length).padStart(2,"0")}</div>
+        <h2>${esc(t.name)}</h2>${t.notes?`<div class="rp-fnote">${esc(t.notes)}</div>`:""}</div>
+        ${lead(t)}
+      </div>
+      <div class="rp-tree">${(t.children||[]).map(c=>pdfBranch(c,0)).join("")||'<div class="rp-row">No sub-nodes.</div>'}</div>
+    </section>`).join("");
+  const statCells = TYPES.filter(k=>cnt[k]).map(k=>`<td><b>${cnt[k]}</b>${esc(pluralLabel(k))}</td>`).join("") + `<td><b>${total}</b>Total</td>`;
+  $("#printArea").innerHTML = `<div class="rep">
+    <div class="rp-cover">
+      <img class="rp-crest" src="${logoSrc(root)||LOGOS.brand}" alt="">
+      <div class="rp-eyebrow">Organization Chart</div>
+      <h1>${esc(root.name)}</h1>
+      <div class="rp-rule"></div>
+      <div class="rp-date">${today}</div>
+      <div class="rp-leads">${lead(root,true)}</div>
+      <div class="rp-toc">${tops.map((t,i)=>`<a class="rp-toc-item" href="#sec${i}">${logoSrc(t)?`<img src="${logoSrc(t)}" alt="">`:""}<span class="num">${String(i+1).padStart(2,"0")}</span><span>${esc(t.name)}</span></a>`).join("")}</div>
+      <table class="rp-stats"><tr>${statCells}</tr></table>
+    </div>
+    ${sections}
+    <div class="rp-foot">Generated with Organogram Builder · ${today}</div>
+  </div>`;
+  toast("In the print dialog, choose “Save as PDF”");
+  setTimeout(()=>window.print(), 350);
+}
+
+/* ================= POWERPOINT DECK (.pptx written from scratch) ================= */
+const strU8 = s => { const e = unescape(encodeURIComponent(s)); const u = new Uint8Array(e.length); for(let i=0;i<e.length;i++) u[i]=e.charCodeAt(i); return u; };
+const duU8  = du => { const b = atob(du.split(",")[1]); const u = new Uint8Array(b.length); for(let i=0;i<b.length;i++) u[i]=b.charCodeAt(i); return u; };
+const duExt = du => du.slice(5, du.indexOf(";")).includes("png") ? "png" : "jpeg";
+const CRC_T = (()=>{ const t=[]; for(let n=0;n<256;n++){ let c=n; for(let k=0;k<8;k++) c = c&1 ? 0xEDB88320^(c>>>1) : c>>>1; t[n]=c>>>0; } return t; })();
+function crc32(u){ let c=0xFFFFFFFF; for(let i=0;i<u.length;i++) c = CRC_T[(c^u[i])&255]^(c>>>8); return (c^0xFFFFFFFF)>>>0; }
+const le16 = v => [v&255,(v>>8)&255];
+const le32 = v => [v&255,(v>>8)&255,(v>>16)&255,(v>>>24)&255];
+function zipStoreU8(entries){
+  const chunks=[], cd=[]; let off=0, cdLen=0;
+  for(const e of entries){
+    const nm = strU8(e.name), d = e.data, crc = crc32(d);
+    const lh = new Uint8Array([...le32(0x04034b50),...le16(20),...le16(0),...le16(0),...le16(0x21),...le16(0x5a4f),...le32(crc),...le32(d.length),...le32(d.length),...le16(nm.length),...le16(0)]);
+    chunks.push(lh, nm, d);
+    cd.push(new Uint8Array([...le32(0x02014b50),...le16(20),...le16(20),...le16(0),...le16(0),...le16(0x21),...le16(0x5a4f),...le32(crc),...le32(d.length),...le32(d.length),...le16(nm.length),...le16(0),...le16(0),...le16(0),...le16(0),...le32(0),...le32(off)]), nm);
+    off += lh.length + nm.length + d.length;
+  }
+  for(const c of cd) cdLen += c.length;
+  const end = new Uint8Array([...le32(0x06054b50),...le16(0),...le16(0),...le16(entries.length),...le16(entries.length),...le32(cdLen),...le32(off),...le16(0)]);
+  let total = off + cdLen + end.length, out = new Uint8Array(total), p = 0;
+  for(const c of [...chunks, ...cd, end]){ out.set(c, p); p += c.length; }
+  return out;
+}
+const XH = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+const NSP = 'xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"';
+const RNS = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/";
+const IN = v => Math.round(v*914400);
+const escX = s => String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+let __sid = 2;
+function pxTb(x,y,w,h,paras,anchor){
+  const ps = paras.map(p=>{
+    const runs = (p.runs||[]).map(r=>`<a:r><a:rPr lang="en-US" sz="${Math.round((r.sz||14)*100)}"${r.b?' b="1"':""}${r.i?' i="1"':""} spc="${r.spc||0}" dirty="0"><a:solidFill><a:srgbClr val="${r.color||"FFFFFF"}"/></a:solidFill><a:latin typeface="${r.font||"Segoe UI"}"/>${r.link?`<a:hlinkClick xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" r:id="rId${r.link}" action="ppaction://hlinksldjump"/>`:""}</a:rPr><a:t>${escX(r.t)}</a:t></a:r>`).join("");
+    return `<a:p><a:pPr${p.align?` algn="${p.align}"`:""}${p.before?` ><a:spcBef><a:spcPts val="${p.before*100}"/></a:spcBef`:""}></a:pPr>${runs||'<a:endParaRPr lang="en-US"/>'}</a:p>`;
+  }).join("");
+  return `<p:sp><p:nvSpPr><p:cNvPr id="${__sid++}" name="tb"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="${x}" y="${y}"/><a:ext cx="${w}" cy="${h}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/></p:spPr><p:txBody><a:bodyPr wrap="square"${anchor?` anchor="${anchor}"`:""} lIns="0" rIns="0" tIns="0" bIns="0"><a:normAutofit/></a:bodyPr><a:lstStyle/>${ps}</p:txBody></p:sp>`;
+}
+function pxRect(x,y,w,h,color,round){
+  return `<p:sp><p:nvSpPr><p:cNvPr id="${__sid++}" name="rc"/><p:cNvSpPr/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="${x}" y="${y}"/><a:ext cx="${w}" cy="${h}"/></a:xfrm><a:prstGeom prst="${round?"roundRect":"rect"}"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr val="${color}"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr><p:txBody><a:bodyPr/><a:lstStyle/><a:p><a:endParaRPr lang="en-US"/></a:p></p:txBody></p:sp>`;
+}
+function pxPic(rid,x,y,w,h,ellipse){
+  return `<p:pic><p:nvPicPr><p:cNvPr id="${__sid++}" name="im"/><p:cNvPicPr/><p:nvPr/></p:nvPicPr><p:blipFill><a:blip r:embed="rId${rid}"/><a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr><a:xfrm><a:off x="${x}" y="${y}"/><a:ext cx="${w}" cy="${h}"/></a:xfrm><a:prstGeom prst="${ellipse?"ellipse":"rect"}"><a:avLst/></a:prstGeom>${ellipse?'<a:ln w="19050"><a:solidFill><a:srgbClr val="E8B33C"/></a:solidFill></a:ln>':""}</p:spPr></p:pic>`;
+}
+const isRaster = du => typeof du==="string" && /^data:image\/(png|jpe?g);base64,/i.test(du);
+function buildPptxEntries(){
+  const NAVY="0A1020", PANEL="121B33", GOLD="E8B33C", WHITE="F2F5FC", MUT="93A0BE";
+  const media = [], slides = [];
+  const addMedia = du => { media.push({ext:duExt(du), data:duU8(du)}); return media.length; };
+  function slide(build, bg){
+    __sid = 2;
+    const rels = [];
+    const ctx = {
+      img: du => { const m = addMedia(du); rels.push({type:"image", target:`../media/image${m}.${media[m-1].ext}`}); return rels.length + 1; },   // rId1 = layout
+      lnk: slideNo => { rels.push({type:"slide", target:`slide${slideNo}.xml`}); return rels.length + 1; }
+    };
+    const shapes = build(ctx);
+    slides.push({ rels, xml: XH+`<p:sld ${NSP}><p:cSld><p:bg><p:bgPr><a:solidFill><a:srgbClr val="${bg||NAVY}"/></a:solidFill><a:effectLst/></p:bgPr></p:bg><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr>${shapes}</p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sld>` });
+  }
+  const today = new Date().toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"});
+  const cnt = descCount(root), total = Object.values(cnt).reduce((a,b)=>a+b,0)+1;
+  const tops = root.children||[];
+
+  // ---- Slide 1 · cover with clickable branch index
+  slide(ctx=>{
+    const img = ctx.img, lnk = ctx.lnk;
+    const pic = (du,...a)=> isRaster(du) ? pxPic(img(du),...a) : "";
+    let s = "";
+    s += pic(logoSrc(root)||LOGOS.brand, IN(6.14), IN(0.5), IN(1.05), IN(1.05));
+    s += pxTb(IN(1.5), IN(1.85), IN(10.33), IN(0.35), [{align:"ctr",runs:[{t:"ORGANIZATION CHART", sz:12, color:GOLD, b:1, spc:300}]}]);
+    s += pxTb(IN(1.5), IN(2.3), IN(10.33), IN(1.2), [{align:"ctr",runs:[{t:root.name, sz:40, b:1, color:WHITE}]}]);
+    s += pxRect(IN(5.67), IN(3.78), IN(2.0), IN(0.032), GOLD);
+    s += pxTb(IN(1.5), IN(3.96), IN(10.33), IN(0.35), [{align:"ctr",runs:[{t:today, sz:12, color:MUT}]}]);
+    if(tops.length){
+      s += pxTb(IN(1.5), IN(4.6), IN(10.33), IN(0.3), [{align:"ctr",runs:[{t:((TYPE_META[tops[0].type]?.label||"Branches").toUpperCase())+" — CLICK TO JUMP TO A SLIDE", sz:10, b:1, color:MUT, spc:260}]}]);
+      tops.slice(0,9).forEach((f,i)=>{
+        const col = i%3, row = Math.floor(i/3);
+        const x = IN(1.62 + col*3.45), y = IN(5.0 + row*0.66);
+        const rid = lnk(i+3);                              // slide1 cover, slide2 leadership, branches from slide3
+        s += pxRect(x, y, IN(3.25), IN(0.54), PANEL, true);
+        s += pxTb(x+IN(0.2), y+IN(0.12), IN(2.9), IN(0.34),
+          [{runs:[{t:String(i+1).padStart(2,"0")+"  ", sz:12, b:1, color:GOLD, font:"Consolas", link:rid},
+                  {t:f.name, sz:12.5, b:1, color:WHITE, link:rid}]}]);
+      });
+    }
+    const statTxt = TYPES.filter(k=>cnt[k]).map(k=>`${cnt[k]} ${pluralLabel(k)}`).join("   ·   ") + `   ·   ${total} total`;
+    s += pxTb(IN(1.5), IN(6.95), IN(10.33), IN(0.3), [{align:"ctr",runs:[{t:statTxt, sz:11.5, color:MUT}]}]);
+    return s;
+  });
+
+  // ---- Slide 2 · leadership
+  slide(ctx=>{
+    const img = ctx.img;
+    const pic = (du,...a)=> isRaster(du) ? pxPic(img(du),...a) : "";
+    let s = pxTb(IN(0.7), IN(0.55), IN(8), IN(0.35), [{runs:[{t:"LEADERSHIP", sz:12, b:1, color:GOLD, spc:300}]}]);
+    s += pxTb(IN(0.7), IN(0.95), IN(10), IN(0.6), [{runs:[{t:"Who runs what", sz:28, b:1, color:WHITE}]}]);
+    s += pxRect(IN(0.7), IN(1.62), IN(1.2), IN(0.03), GOLD);
+    const leaders = [root, ...tops].filter(n=>n && n.cmd && (n.cmd.name||n.cmd.photo));
+    leaders.slice(0,8).forEach((n,i)=>{
+      const col = i%4, row = Math.floor(i/4);
+      const x = IN(0.7 + col*3.08), y = IN(2.0 + row*2.35);
+      s += pxRect(x, y, IN(2.85), IN(2.1), PANEL, true);
+      if(isRaster(n.cmd.photo)) s += pic(n.cmd.photo, x+IN(1.05), y+IN(0.22), IN(0.75), IN(0.75), true);
+      else s += pxTb(x, y+IN(0.26), IN(2.85), IN(0.7), [{align:"ctr",runs:[{t:(n.cmd.name||"?").charAt(0).toUpperCase(), sz:30, b:1, color:GOLD}]}]);
+      s += pxTb(x, y+IN(1.08), IN(2.85), IN(0.3), [{align:"ctr",runs:[{t:(n.cmd.rank||"").toUpperCase(), sz:9, b:1, color:GOLD, spc:150}]}]);
+      s += pxTb(x, y+IN(1.37), IN(2.85), IN(0.35), [{align:"ctr",runs:[{t:n.cmd.name||"", sz:13, b:1, color:WHITE}]}]);
+      s += pxTb(x, y+IN(1.71), IN(2.85), IN(0.3), [{align:"ctr",runs:[{t:n.name, sz:9.5, color:MUT}]}]);
+    });
+    if(!leaders.length) s += pxTb(IN(0.7), IN(3), IN(10), IN(0.5), [{runs:[{t:"No leads added yet — add a person on any node to populate this slide.", sz:14, color:MUT}]}]);
+    return s;
+  });
+
+  // ---- Branch slides (one per top-level node)
+  tops.forEach((f,fi)=>{
+    slide(ctx=>{
+      const img = ctx.img;
+      const pic = (du,...a)=> isRaster(du) ? pxPic(img(du),...a) : "";
+      let s = "";
+      s += pxRect(0, 0, IN(13.333), IN(1.5), PANEL);
+      s += pxRect(0, IN(1.5), IN(13.333), IN(0.03), GOLD);
+      s += pic(logoSrc(f), IN(0.55), IN(0.32), IN(0.86), IN(0.86));
+      s += pxTb(IN(1.65), IN(0.3), IN(8), IN(0.3), [{runs:[{t:`${(TYPE_META[f.type]?.label||"").toUpperCase()} ${String(fi+1).padStart(2,"0")} / ${String(tops.length).padStart(2,"0")}`, sz:10.5, b:1, color:GOLD, spc:300}]}]);
+      s += pxTb(IN(1.65), IN(0.62), IN(8), IN(0.55), [{runs:[{t:f.name, sz:25, b:1, color:WHITE}]}]);
+      if(f.notes) s += pxTb(IN(1.65), IN(1.13), IN(8), IN(0.3), [{runs:[{t:f.notes, sz:11, color:MUT}]}]);
+      if(f.cmd && f.cmd.name){
+        s += pic(f.cmd.photo, IN(11.45), IN(0.37), IN(0.78), IN(0.78), true);
+        s += pxTb(IN(8.4), IN(0.45), IN(2.9), IN(0.3), [{align:"r",runs:[{t:(f.cmd.rank||"").toUpperCase(), sz:9.5, b:1, color:GOLD, spc:200}]}]);
+        s += pxTb(IN(8.4), IN(0.74), IN(2.9), IN(0.35), [{align:"r",runs:[{t:f.cmd.name, sz:13, b:1, color:WHITE}]}]);
+      }
+      const secs = (f.children||[]).slice(0,5);
+      const cols = Math.max(secs.length, 1);
+      const colW = (13.333 - 1.1 - 0.25*(cols-1)) / cols;
+      if(!secs.length) s += pxTb(IN(0.7), IN(3.2), IN(11), IN(0.5), [{align:"ctr",runs:[{t:"No sub-nodes under this branch.", sz:14, color:MUT}]}]);
+      secs.forEach((sec,si)=>{
+        const x = IN(0.55 + si*(colW+0.25));
+        s += pxRect(x, IN(1.85), IN(colW), IN(5.25), PANEL, true);
+        const paras = [{runs:[{t:sec.name, sz:13.5, b:1, color:GOLD}]}];
+        const meta = [cmdLine(sec), sec.notes].filter(Boolean).join(" · ");
+        if(meta) paras.push({runs:[{t:meta, sz:9, color:MUT, i:1}]});
+        (sec.children||[]).forEach(b=>{
+          paras.push({before:4, runs:[{t:(b.code?b.code+"  ":""), sz:10.5, b:1, color:GOLD, font:"Consolas"},{t:b.name, sz:11, color:WHITE},
+            ...(b.notes?[{t:"  ·  "+b.notes, sz:9, color:MUT, i:1}]:[])]});
+          (b.children||[]).forEach(o=>paras.push({runs:[{t:"      ◦ "+(o.code?o.code+" ":"")+o.name, sz:9.5, color:MUT}]}));
+        });
+        s += pxTb(x+IN(0.22), IN(2.05), IN(colW-0.44), IN(4.9), paras);
+      });
+      return s;
+    });
+  });
+
+  // ---- Closing slide
+  slide(()=>{
+    let s = pxTb(IN(1.5), IN(2.8), IN(10.33), IN(0.4), [{align:"ctr",runs:[{t:"MADE WITH", sz:11, b:1, color:MUT, spc:350}]}]);
+    s += pxTb(IN(1.5), IN(3.2), IN(10.33), IN(0.8), [{align:"ctr",runs:[{t:"Organogram Builder", sz:26, b:1, color:WHITE}]}]);
+    s += pxRect(IN(5.92), IN(4.15), IN(1.5), IN(0.03), GOLD);
+    s += pxTb(IN(1.5), IN(4.35), IN(10.33), IN(0.4), [{align:"ctr",runs:[{t:`${total} nodes · ${today}`, sz:12, color:MUT}]}]);
+    return s;
+  });
+
+  // ---- package
+  const e = [];
+  const ctOverrides = slides.map((_,i)=>`<Override PartName="/ppt/slides/slide${i+1}.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slide+xml"/>`).join("");
+  e.push({name:"[Content_Types].xml", data:strU8(XH+`<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="jpeg" ContentType="image/jpeg"/><Default Extension="png" ContentType="image/png"/><Override PartName="/ppt/presentation.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml"/><Override PartName="/ppt/slideMasters/slideMaster1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml"/><Override PartName="/ppt/slideLayouts/slideLayout1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml"/><Override PartName="/ppt/theme/theme1.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/>${ctOverrides}</Types>`)});
+  e.push({name:"_rels/.rels", data:strU8(XH+`<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${RNS}officeDocument" Target="ppt/presentation.xml"/></Relationships>`)});
+  const presRels = [`<Relationship Id="rId1" Type="${RNS}slideMaster" Target="slideMasters/slideMaster1.xml"/>`]
+    .concat(slides.map((_,i)=>`<Relationship Id="rId${i+2}" Type="${RNS}slide" Target="slides/slide${i+1}.xml"/>`)).join("");
+  e.push({name:"ppt/_rels/presentation.xml.rels", data:strU8(XH+`<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${presRels}</Relationships>`)});
+  e.push({name:"ppt/presentation.xml", data:strU8(XH+`<p:presentation ${NSP}><p:sldMasterIdLst><p:sldMasterId id="2147483648" r:id="rId1"/></p:sldMasterIdLst><p:sldIdLst>${slides.map((_,i)=>`<p:sldId id="${256+i}" r:id="rId${i+2}"/>`).join("")}</p:sldIdLst><p:sldSz cx="12192000" cy="6858000"/><p:notesSz cx="6858000" cy="9144000"/></p:presentation>`)});
+  e.push({name:"ppt/slideMasters/slideMaster1.xml", data:strU8(XH+`<p:sldMaster ${NSP}><p:cSld><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr></p:spTree></p:cSld><p:clrMap bg1="lt1" tx1="dk1" bg2="lt2" tx2="dk2" accent1="accent1" accent2="accent2" accent3="accent3" accent4="accent4" accent5="accent5" accent6="accent6" hlink="hlink" folHlink="folHlink"/><p:sldLayoutIdLst><p:sldLayoutId id="2147483649" r:id="rId1"/></p:sldLayoutIdLst></p:sldMaster>`)});
+  e.push({name:"ppt/slideMasters/_rels/slideMaster1.xml.rels", data:strU8(XH+`<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${RNS}slideLayout" Target="../slideLayouts/slideLayout1.xml"/><Relationship Id="rId2" Type="${RNS}theme" Target="../theme/theme1.xml"/></Relationships>`)});
+  e.push({name:"ppt/slideLayouts/slideLayout1.xml", data:strU8(XH+`<p:sldLayout ${NSP} type="blank" preserve="1"><p:cSld name="Blank"><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr></p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sldLayout>`)});
+  e.push({name:"ppt/slideLayouts/_rels/slideLayout1.xml.rels", data:strU8(XH+`<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${RNS}slideMaster" Target="../slideMasters/slideMaster1.xml"/></Relationships>`)});
+  const FS = `<a:fmtScheme name="Office"><a:fillStyleLst><a:solidFill><a:schemeClr val="phClr"/></a:solidFill><a:solidFill><a:schemeClr val="phClr"/></a:solidFill><a:solidFill><a:schemeClr val="phClr"/></a:solidFill></a:fillStyleLst><a:lnStyleLst><a:ln w="9525"><a:solidFill><a:schemeClr val="phClr"/></a:solidFill></a:ln><a:ln w="19050"><a:solidFill><a:schemeClr val="phClr"/></a:solidFill></a:ln><a:ln w="28575"><a:solidFill><a:schemeClr val="phClr"/></a:solidFill></a:ln></a:lnStyleLst><a:effectStyleLst><a:effectStyle><a:effectLst/></a:effectStyle><a:effectStyle><a:effectLst/></a:effectStyle><a:effectStyle><a:effectLst/></a:effectStyle></a:effectStyleLst><a:bgFillStyleLst><a:solidFill><a:schemeClr val="phClr"/></a:solidFill><a:solidFill><a:schemeClr val="phClr"/></a:solidFill><a:solidFill><a:schemeClr val="phClr"/></a:solidFill></a:bgFillStyleLst></a:fmtScheme>`;
+  e.push({name:"ppt/theme/theme1.xml", data:strU8(XH+`<a:theme xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" name="Organogram"><a:themeElements><a:clrScheme name="Organogram"><a:dk1><a:srgbClr val="0A1020"/></a:dk1><a:lt1><a:srgbClr val="FFFFFF"/></a:lt1><a:dk2><a:srgbClr val="121B33"/></a:dk2><a:lt2><a:srgbClr val="F2F5FC"/></a:lt2><a:accent1><a:srgbClr val="E8B33C"/></a:accent1><a:accent2><a:srgbClr val="E0483E"/></a:accent2><a:accent3><a:srgbClr val="3DD6C3"/></a:accent3><a:accent4><a:srgbClr val="8B7CF6"/></a:accent4><a:accent5><a:srgbClr val="4CC272"/></a:accent5><a:accent6><a:srgbClr val="93A0BE"/></a:accent6><a:hlink><a:srgbClr val="E8B33C"/></a:hlink><a:folHlink><a:srgbClr val="93A0BE"/></a:folHlink></a:clrScheme><a:fontScheme name="Organogram"><a:majorFont><a:latin typeface="Segoe UI"/><a:ea typeface=""/><a:cs typeface=""/></a:majorFont><a:minorFont><a:latin typeface="Segoe UI"/><a:ea typeface=""/><a:cs typeface=""/></a:minorFont></a:fontScheme>${FS}</a:themeElements></a:theme>`)});
+  media.forEach((m,i)=>e.push({name:`ppt/media/image${i+1}.${m.ext}`, data:m.data}));
+  slides.forEach((s,i)=>{
+    e.push({name:`ppt/slides/slide${i+1}.xml`, data:strU8(s.xml)});
+    const rels = [`<Relationship Id="rId1" Type="${RNS}slideLayout" Target="../slideLayouts/slideLayout1.xml"/>`]
+      .concat(s.rels.map((r2,k)=>`<Relationship Id="rId${k+2}" Type="${RNS}${r2.type}" Target="${r2.target}"/>`)).join("");
+    e.push({name:`ppt/slides/_rels/slide${i+1}.xml.rels`, data:strU8(XH+`<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${rels}</Relationships>`)});
+  });
+  return e;
+}
+function exportPPTX(){
+  try{
+    const u8 = zipStoreU8(buildPptxEntries());
+    download(new Blob([u8],{type:"application/vnd.openxmlformats-officedocument.presentationml.presentation"}), "organogram.pptx");
+    toast("PowerPoint deck exported");
+  }catch(err){ console.error(err); toast("PowerPoint export hit a snag — try again or use the PDF report"); }
+}
+
+/* ================= PRINT ================= */
+$("#printBtn").onclick = ()=>{
+  const ul = n => `<li><span class="pt">${TYPE_META[n.type]?.label||n.type}</span>${n.code?`<span class="pc">${esc(n.code)}</span>`:""}<b>${esc(n.name)}</b>${(n.cmd&&n.cmd.name)?` · Comd: ${esc((n.cmd.rank?n.cmd.rank+" ":"")+n.cmd.name)}`:""}${n.notes?` — <i>${esc(n.notes)}</i>`:""}
+    ${(n.children&&n.children.length)?`<ul>${n.children.map(ul).join("")}</ul>`:""}</li>`;
+  $("#printArea").innerHTML = `<h1>${esc(root.name)}</h1>
+    <div class="psub">Organization chart · printed ${new Date().toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"})}</div>
+    <ul>${ul(root)}</ul>`;
+  window.print();
+};
+
+/* ================= PRESENTATION ================= */
+function enterPresentation(){
+  document.body.classList.add("presenting");
+  if(document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(()=>{});
+  setTimeout(()=>fitView(40),80);
+}
+function exitPresentation(){
+  document.body.classList.remove("presenting");
+  if(document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+}
+$("#presBtn").onclick = enterPresentation;
+$("#presExit").onclick = exitPresentation;
+document.addEventListener("fullscreenchange", ()=>{ if(!document.fullscreenElement) document.body.classList.remove("presenting"); });
+
+/* ================= DATABASE FILE (real .json on disk) ================= */
+const idb = {
+  _db:null,
+  open(){ return new Promise((res,rej)=>{
+    const r = indexedDB.open("orgbuilder-db", 1);
+    r.onupgradeneeded = ()=>r.result.createObjectStore("kv");
+    r.onsuccess = ()=>res(r.result); r.onerror = ()=>rej(r.error);
+  });},
+  async get(k){ try{ const db=this._db||(this._db=await this.open());
+    return new Promise(res=>{ const t=db.transaction("kv").objectStore("kv").get(k);
+      t.onsuccess=()=>res(t.result); t.onerror=()=>res(null); }); }catch(e){ return null; } },
+  async set(k,v){ try{ const db=this._db||(this._db=await this.open());
+    return new Promise(res=>{ const t=db.transaction("kv","readwrite");
+      t.objectStore("kv").put(v,k); t.oncomplete=()=>res(); t.onerror=()=>res(); }); }catch(e){} },
+  async del(k){ try{ const db=this._db||(this._db=await this.open());
+    return new Promise(res=>{ const t=db.transaction("kv","readwrite");
+      t.objectStore("kv").delete(k); t.oncomplete=()=>res(); t.onerror=()=>res(); }); }catch(e){} }
+};
+let fileHandle = null, fileState = "off";    // off | linked | reconnect
+const statusBtn = $("#saveStatus");
+function paintStatus(){
+  const blocked = !store.persistent && fileState!=="linked";
+  const st = fileState==="linked" ? "linked" : fileState==="reconnect" ? "reconnect" : blocked ? "blocked" : "off";
+  statusBtn.dataset.state = st;
+  statusBtn.querySelector(".stext").textContent =
+    st==="linked" ? (fileHandle?.name||"File") : st==="reconnect" ? "Reconnect" : st==="blocked" ? "Not saving!" : "Browser";
+  statusBtn.title =
+    st==="linked" ? "Every change is written to "+(fileHandle?.name||"your database file") :
+    st==="reconnect" ? "Click to reconnect your database file (the browser asks once per session)" :
+    st==="blocked" ? "This browser is blocking local storage — click to link a database file so nothing is lost" :
+    "Changes save inside this browser. Click to link a real database file on disk.";
+  const item = $("#linkDbItem");
+  if(item) item.textContent = fileState==="off" ? "🗄 Link database file…" : "🗄 Unlink database file";
+}
+function flashSave(){ statusBtn.classList.remove("pulse"); void statusBtn.offsetWidth; statusBtn.classList.add("pulse"); }
+let _fileT;
+function scheduleFileWrite(){
+  if(fileState!=="linked" || !fileHandle) return;
+  clearTimeout(_fileT);
+  _fileT = setTimeout(async ()=>{
+    try{
+      const w = await fileHandle.createWritable();
+      await w.write(JSON.stringify({app:"Organogram Builder", v:3, saved:new Date().toISOString(), root, collapsed:[...collapsed], ink, labels, layout}, null, 2));
+      await w.close();
+      flashSave();
+    }catch(e){ fileState="reconnect"; paintStatus(); }
+  }, 800);
+}
+function adoptData(r, col, inkArr, lbls, lay){
+  forEach(r, n=>{ if(!n.id) n.id = uid(); });
+  root = r;
+  ink = inkArr || []; renderInk();
+  if(lbls!==undefined){ labels = lbls || null; applyLabels(labels); }
+  if(lay) layout = lay;
+  collapsed = col ? new Set(col) : new Set();
+  if(!col) forEach(root, n=>{ if(n.type==="department") collapsed.add(n.id); });
+  migrate(); levelFilter = null; revealPath.clear(); closeAllPanels();
+  if(typeof paintLayoutBtn==="function") paintLayoutBtn();
+  render(); fitView();
+}
+async function loadFromFile(){
+  try{
+    const f = await fileHandle.getFile(); const txt = await f.text();
+    if(txt.trim()){ const d = JSON.parse(txt); if(d && d.root){ adoptData(d.root, d.collapsed, d.ink, d.labels, d.layout); toast("Loaded from "+fileHandle.name); } }
+  }catch(e){ fileState="reconnect"; paintStatus(); }
+}
+async function linkDatabaseFile(){
+  if(!window.showSaveFilePicker){ toast("Database file needs Chrome or Edge — on this browser use Backup (.json) instead"); return; }
+  try{
+    const h = await showSaveFilePicker({ suggestedName:"organogram-data.json",
+      types:[{description:"Organogram Builder database", accept:{"application/json":[".json"]}}] });
+    fileHandle = h; fileState = "linked"; await idb.set("dbHandle", h);
+    try{
+      const f = await h.getFile(); const txt = await f.text();
+      if(txt.trim()){
+        const d = JSON.parse(txt);
+        if(d && d.root && confirm("This file already contains organogram data.\n\nOK — load the file's data\nCancel — overwrite the file with the current chart")) adoptData(d.root, d.collapsed);
+      }
+    }catch(e){}
+    scheduleFileWrite(); paintStatus();
+    toast("Database linked — every change now writes straight to "+h.name);
+  }catch(e){ /* picker cancelled */ }
+}
+async function unlinkDatabaseFile(){
+  fileHandle = null; fileState = "off"; await idb.del("dbHandle"); paintStatus();
+  toast("Database file unlinked — saving in this browser only");
+}
+statusBtn.onclick = async ()=>{
+  if(fileState==="reconnect" && fileHandle){
+    try{
+      const p = await fileHandle.requestPermission({mode:"readwrite"});
+      if(p==="granted"){ fileState="linked"; await loadFromFile(); paintStatus(); scheduleFileWrite(); return; }
+    }catch(e){}
+    paintStatus();
+  } else if(fileState==="off"){ linkDatabaseFile(); }
+  else toast("Connected to "+(fileHandle?.name||"database file"));
+};
+(async ()=>{
+  if(!window.indexedDB || !window.showSaveFilePicker){ paintStatus(); return; }
+  try{
+    const h = await idb.get("dbHandle");
+    if(h && h.queryPermission){
+      fileHandle = h;
+      const p = await h.queryPermission({mode:"readwrite"});
+      if(p==="granted"){ fileState="linked"; await loadFromFile(); }
+      else fileState = "reconnect";
+    }
+  }catch(e){}
+  paintStatus();
+})();
+
+/* ================= PEOPLE TOGGLE ================= */
+showCmd = store.get("orgbuilder_people")==="1";
+const cmdBtn = $("#cmdBtn");
+function paintCmdBtn(){ cmdBtn.classList.toggle("on", showCmd); cmdBtn.title = showCmd ? "Hide people" : "Show people"; }
+cmdBtn.onclick = ()=>{
+  showCmd = !showCmd; store.set("orgbuilder_people", showCmd?"1":"0"); paintCmdBtn(); render();
+  if(showCmd){
+    let any=false; forEach(root,n=>{ if(n.cmd&&(n.cmd.name||n.cmd.photo)) any=true; });
+    if(!any) toast("No people added yet — open ✎ Edit on any node to add a name & photo");
+  }
+};
+paintCmdBtn();
+
+/* ================= LAYOUT TOGGLE ================= */
+const LAYOUTS = [["td","Top-down","⊟"],["lr","Left-right","⊞"],["bu","Bottom-up","⊠"]];
+const layoutBtn = $("#layoutBtn");
+function paintLayoutBtn(){ const m = LAYOUTS.find(l=>l[0]===layout)||LAYOUTS[0]; layoutBtn.textContent = m[2]; layoutBtn.title = "Layout: "+m[1]+" (click to change)"; }
+layoutBtn.onclick = ()=>{
+  const i = LAYOUTS.findIndex(l=>l[0]===layout);
+  layout = LAYOUTS[(i+1)%LAYOUTS.length][0];
+  paintLayoutBtn(); render(); fitView(); save();
+  toast("Layout: "+(LAYOUTS.find(l=>l[0]===layout)[1]));
+};
+paintLayoutBtn();
+
+/* ================= THEME & TOAST ================= */
+$("#themeBtn").onclick = ()=>{
+  const h=document.documentElement;
+  h.dataset.theme = h.dataset.theme==="dark" ? "light" : "dark";
+  store.set("orgbuilder_theme", h.dataset.theme);
+};
+const savedTheme = store.get("orgbuilder_theme"); if(savedTheme) document.documentElement.dataset.theme = savedTheme;
+
+let toastT;
+function toast(msg){
+  const t=$("#toast"); t.textContent=msg; t.classList.add("show");
+  clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),2400);
+}
+
+/* ================= TEMPLATE GALLERY ================= */
+const TH = {
+  data:`<svg viewBox="0 0 92 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><ellipse cx="21" cy="13" rx="11" ry="5"/><path d="M10 13v9c0 2.8 4.9 5 11 5s11-2.2 11-5v-9M21 32v6M14 44h54M14 44v6M41 38v12M68 44v6"/><rect x="6" y="50" width="17" height="11" rx="2"/><rect x="33" y="50" width="17" height="11" rx="2"/><rect x="60" y="50" width="17" height="11" rx="2"/></svg>`,
+  td2:`<svg viewBox="0 0 92 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="37" y="6" width="18" height="12" rx="2"/><path d="M46 18v8M19 26h54M19 26v8M46 26v8M73 26v8"/><rect x="10" y="34" width="18" height="12" rx="2"/><rect x="37" y="34" width="18" height="12" rx="2"/><rect x="64" y="34" width="18" height="12" rx="2"/></svg>`,
+  td3:`<svg viewBox="0 0 92 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="37" y="4" width="18" height="10" rx="2"/><path d="M46 14v6M22 20h48M22 20v6M46 20v6M70 20v6"/><rect x="13" y="26" width="18" height="10" rx="2"/><rect x="37" y="26" width="18" height="10" rx="2"/><rect x="61" y="26" width="18" height="10" rx="2"/><path d="M22 36v8M14 44h16M14 44v6M30 44v6"/><rect x="8" y="50" width="13" height="9" rx="2"/><rect x="24" y="50" width="13" height="9" rx="2"/></svg>`,
+  td4:`<svg viewBox="0 0 92 64" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="39" y="2" width="14" height="8" rx="2"/><path d="M46 10v5M26 15h40M26 15v5M46 15v5M66 15v5"/><rect x="19" y="20" width="14" height="8" rx="2"/><rect x="39" y="20" width="14" height="8" rx="2"/><rect x="59" y="20" width="14" height="8" rx="2"/><path d="M26 28v5M16 33h20M16 33v4M36 33v4"/><rect x="10" y="37" width="12" height="7" rx="2"/><rect x="30" y="37" width="12" height="7" rx="2"/><path d="M16 44v5M10 49h12M10 49v4M22 49v4"/><rect x="5" y="53" width="10" height="7" rx="2"/><rect x="18" y="53" width="10" height="7" rx="2"/></svg>`,
+  photo:`<svg viewBox="0 0 92 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="46" cy="11" r="7"/><path d="M46 18v8M19 26h54M19 26v8M46 26v8M73 26v8"/><circle cx="19" cy="40" r="6"/><circle cx="46" cy="40" r="6"/><circle cx="73" cy="40" r="6"/></svg>`,
+  inv:`<svg viewBox="0 0 92 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="10" y="14" width="18" height="12" rx="2"/><rect x="37" y="14" width="18" height="12" rx="2"/><rect x="64" y="14" width="18" height="12" rx="2"/><path d="M19 26v8M46 26v8M73 26v8M19 34h54M46 34v8"/><rect x="37" y="42" width="18" height="12" rx="2"/></svg>`,
+  horiz:`<svg viewBox="0 0 92 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="26" width="20" height="12" rx="2"/><path d="M25 32h15M40 12v40M40 12h12M40 32h12M40 52h12"/><rect x="52" y="6" width="20" height="12" rx="2"/><rect x="52" y="26" width="20" height="12" rx="2"/><rect x="52" y="46" width="20" height="12" rx="2"/></svg>`,
+  grid:`<svg viewBox="0 0 92 64" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><rect x="37" y="3" width="18" height="9" rx="2"/><path d="M46 12v5M16 17h60M16 17v5M46 17v5M76 17v5"/><rect x="7" y="22" width="18" height="9" rx="2"/><rect x="37" y="22" width="18" height="9" rx="2"/><rect x="67" y="22" width="18" height="9" rx="2"/><rect x="4" y="40" width="12" height="8" rx="2"/><rect x="19" y="40" width="12" height="8" rx="2"/><rect x="34" y="40" width="12" height="8" rx="2"/><rect x="49" y="40" width="12" height="8" rx="2"/><rect x="64" y="40" width="12" height="8" rx="2"/><rect x="4" y="51" width="12" height="8" rx="2"/><rect x="19" y="51" width="12" height="8" rx="2"/><rect x="34" y="51" width="12" height="8" rx="2"/><rect x="49" y="51" width="12" height="8" rx="2"/><rect x="64" y="51" width="12" height="8" rx="2"/></svg>`
+};
+function gen(levels){
+  const kc=[3,3,2,2], cnt=[0,0,0,0,0];
+  function mk(level){
+    const type=TYPES[level];
+    const name = level===0 ? "My Organization" : TYPE_META[type].label+" "+(++cnt[level]);
+    const kids = level+1<levels ? Array.from({length:kc[level]||2},()=>mk(level+1)) : [];
+    return N(name, type, {logo: level===0?"brand":""}, kids);
+  }
+  return mk(0);
+}
+function tplCorporate(){ return N("Globex Corporation","organization",{logo:"grid",cmd:{rank:"CEO",name:"Helena Vos"}},[
+  N("Finance","division",{cmd:{rank:"CFO",name:"Marcus Reed"}},[N("Accounting","department"),N("FP&A","department"),N("Treasury","department")]),
+  N("Operations","division",{cmd:{rank:"COO",name:"Iris Tan"}},[N("Supply Chain","department"),N("Manufacturing","department")]),
+  N("Technology","division",{cmd:{rank:"CTO",name:"Dev Khanna"}},[N("Engineering","department"),N("IT","department"),N("Security","department")]),
+  N("Sales & Marketing","division",{cmd:{rank:"CRO",name:"Paula Mertz"}},[N("Sales","department"),N("Marketing","department")])]); }
+function tplNonprofit(){ return N("Helping Hands","organization",{logo:"pulse",cmd:{rank:"Executive Director",name:"Amara Sy"}},[
+  N("Programs","division",{},[N("Education","department"),N("Disaster Relief","department"),N("Community Outreach","department")]),
+  N("Development","division",{},[N("Fundraising","department"),N("Grants","department")]),
+  N("Operations","division",{},[N("Finance","department"),N("Volunteers","department")])]); }
+function tplHospital(){ return N("St. Mary's Hospital","organization",{logo:"spark",cmd:{rank:"Chief Executive",name:"Dr. Lena Roth"}},[
+  N("Medical","division",{cmd:{rank:"Chief Medical Officer",name:"Dr. P. Ofori"}},[N("Cardiology","department"),N("Pediatrics","department"),N("Emergency","department")]),
+  N("Surgical","division",{},[N("General Surgery","department"),N("Orthopedics","department")]),
+  N("Diagnostics","division",{},[N("Radiology","department"),N("Laboratory","department")]),
+  N("Administration","division",{},[N("Nursing","department"),N("Facilities","department")])]); }
+function tplHR(){ return N("People & Culture","organization",{logo:"globe",cmd:{rank:"CHRO",name:"Maya Klein"}},[
+  N("Talent Acquisition","division",{},[N("Recruiting","department"),N("Sourcing","department")]),
+  N("People Operations","division",{},[N("HR Operations","department"),N("Payroll & Benefits","department")]),
+  N("Learning & Development","division",{},[N("Training","department"),N("Leadership","department")]),
+  N("HR Business Partners","division",{},[N("Engineering HRBP","department"),N("Commercial HRBP","department")])]); }
+function tplSchool(){ return N("Riverside District","organization",{logo:"layers",cmd:{rank:"Superintendent",name:"Dr. Carla Mensah"}},[
+  N("Riverside High","division",{},[N("Sciences","department"),N("Humanities","department"),N("Athletics","department")]),
+  N("Lakeside Middle","division",{},[N("Math","department"),N("Arts","department")]),
+  N("Oak Elementary","division",{},[N("Lower School","department"),N("Upper School","department")]),
+  N("District Office","division",{},[N("Curriculum","department"),N("Operations","department")])]); }
+const TEMPLATES = [
+  {key:"import",     name:"Import from data",          th:TH.data,  feat:true, action:"import"},
+  {key:"l2",         name:"Org chart · 2 levels",      th:TH.td2,   build:()=>gen(2)},
+  {key:"l3",         name:"Org chart · 3 levels",      th:TH.td3,   build:()=>gen(3)},
+  {key:"l4",         name:"Org chart · 4 levels",      th:TH.td4,   build:()=>gen(4)},
+  {key:"photo",      name:"Photo org chart",           th:TH.photo, build:()=>defaultData(), showCmd:true},
+  {key:"inverted",   name:"Inverted org chart",        th:TH.inv,   build:()=>defaultData(), layout:"bu"},
+  {key:"horizontal", name:"Horizontal org chart",      th:TH.horiz, build:()=>defaultData(), layout:"lr"},
+  {key:"company",    name:"Company org chart",         th:TH.grid,  build:()=>defaultData(), labels:{organization:"Company",division:"Division",department:"Department",team:"Team",unit:"Role"}},
+  {key:"nonprofit",  name:"Non-profit org chart",      th:TH.td3,   build:tplNonprofit, labels:{organization:"Organization",division:"Program area",department:"Team",team:"Group",unit:"Role"}},
+  {key:"corporate",  name:"Corporate org chart",       th:TH.grid,  build:tplCorporate, labels:{organization:"Company",division:"Division",department:"Department",team:"Team",unit:"Role"}},
+  {key:"hospital",   name:"Hospital org chart",        th:TH.td3,   build:tplHospital, labels:{organization:"Hospital",division:"Division",department:"Department",team:"Unit",unit:"Role"}},
+  {key:"hr",         name:"Human resources org chart", th:TH.td3,   build:tplHR, labels:{organization:"Company",division:"Function",department:"Team",team:"Pod",unit:"Role"}},
+  {key:"invpic",     name:"Inverted photo org chart",  th:TH.photo, build:()=>defaultData(), layout:"bu", showCmd:true},
+  {key:"school",     name:"Horizontal school chart",   th:TH.horiz, build:tplSchool, labels:{organization:"District",division:"School",department:"Department",team:"Class",unit:"Role"}, layout:"lr"}
+];
+function openTemplates(){
+  let ov = $("#tplOverlay");
+  if(!ov){ ov = document.createElement("div"); ov.id = "tplOverlay"; document.body.appendChild(ov);
+    ov.addEventListener("click", e=>{ if(e.target===ov) ov.classList.remove("open"); }); }
+  ov.innerHTML = `<div class="modal"><div class="m-head"><div><div class="m-title">Start from a template</div><div class="m-sub">Pick a starting point — rename levels, layout and data afterwards</div></div><button class="m-x" id="tplX">✕</button></div>
+    <div class="tpl-grid">${TEMPLATES.map((t,i)=>`<button class="tpl-card${t.feat?" feat":""}" data-i="${i}"><div class="tpl-thumb">${t.th}</div><div class="tpl-name">${esc(t.name)}</div></button>`).join("")}</div></div>`;
+  ov.classList.add("open");
+  $("#tplX").onclick = ()=>ov.classList.remove("open");
+  ov.querySelectorAll(".tpl-card").forEach(c=>c.onclick = ()=>applyTemplate(TEMPLATES[+c.dataset.i]));
+}
+function applyTemplate(t){
+  const ov = $("#tplOverlay");
+  if(t.action==="import"){ if(ov) ov.classList.remove("open"); $("#sheetFile").click(); return; }
+  if(!confirm("Start a new chart from this template? Your current chart will be replaced.")) return;
+  showCmd = !!t.showCmd; store.set("orgbuilder_people", showCmd?"1":"0"); paintCmdBtn();
+  adoptData(t.build(), undefined, [], t.labels||null, t.layout||"td");
+  paintLayoutBtn();
+  if(ov) ov.classList.remove("open");
+  toast(t.name+" — ready");
+}
+$("#tplBtn").onclick = openTemplates;
+
+/* ================= RENAME LEVELS ================= */
+function openLevelsModal(){
+  let ov = $("#levelsOverlay");
+  if(!ov){
+    ov = document.createElement("div"); ov.id = "levelsOverlay"; document.body.appendChild(ov);
+    ov.addEventListener("click", e=>{ if(e.target===ov) ov.classList.remove("open"); });
+  }
+  ov.innerHTML = `<div class="modal"><div class="m-head"><div><div class="m-title">Rename levels</div><div class="m-sub">Set the name of each hierarchy level</div></div><button class="m-x" id="lvX">✕</button></div>
+    ${TYPES.map((t,i)=>`<div class="field"><label>Level ${i+1}</label><input type="text" id="lv_${t}" value="${esc(TYPE_META[t].label)}" maxlength="28"></div>`).join("")}
+    <div class="m-foot"><button class="btn ghost" id="lvReset">Reset to defaults</button><button class="btn primary" id="lvSave">Save</button></div></div>`;
+  ov.classList.add("open");
+  $("#lvX").onclick = ()=>ov.classList.remove("open");
+  $("#lvReset").onclick = ()=>TYPES.forEach(t=>{ $("#lv_"+t).value = DEFAULT_LABELS[t]; });
+  $("#lvSave").onclick = ()=>{
+    const lb = {}; let custom = false;
+    TYPES.forEach(t=>{ const v = ($("#lv_"+t).value||"").trim() || DEFAULT_LABELS[t]; lb[t] = v; if(v!==DEFAULT_LABELS[t]) custom = true; });
+    labels = custom ? lb : null; applyLabels(labels);
+    ov.classList.remove("open"); render(); refreshPanels(); save(); toast("Level names updated");
+  };
+}
+
+/* ================= IMPORT FROM EXCEL / CSV ================= */
+function parseCSV(text){
+  const rows=[]; let row=[], cur="", q=false;
+  for(let i=0;i<text.length;i++){ const ch=text[i];
+    if(q){ if(ch==='"'){ if(text[i+1]==='"'){ cur+='"'; i++; } else q=false; } else cur+=ch; }
+    else if(ch==='"') q=true;
+    else if(ch===',') { row.push(cur); cur=""; }
+    else if(ch==='\n'){ row.push(cur); rows.push(row); row=[]; cur=""; }
+    else if(ch!=='\r') cur+=ch;
+  }
+  if(cur!=="" || row.length){ row.push(cur); rows.push(row); }
+  return rows;
+}
+let _xlsxP;
+function loadXLSX(){
+  if(window.XLSX) return Promise.resolve(window.XLSX);
+  if(_xlsxP) return _xlsxP;
+  _xlsxP = new Promise((res,rej)=>{ const s=document.createElement("script"); s.src="assets/vendor/xlsx.full.min.js"; s.onload=()=>res(window.XLSX); s.onerror=()=>rej(new Error("xlsx")); document.head.appendChild(s); });
+  return _xlsxP;
+}
+function colIndex(headers, names){
+  for(let i=0;i<headers.length;i++){ const h=String(headers[i]||"").trim().toLowerCase(); if(names.includes(h)) return i; }
+  return -1;
+}
+function levelToType(val, depth){
+  if(val){ const v=String(val).trim().toLowerCase();
+    for(const t of TYPES){ if(t===v || (TYPE_META[t].label||"").toLowerCase()===v) return t; } }
+  return TYPES[Math.min(depth, TYPES.length-1)];
+}
+function importRows(rows, fallbackTitle){
+  rows = (rows||[]).filter(r=>r && r.some(c=>String(c==null?"":c).trim()!==""));
+  if(rows.length<2){ toast("That sheet needs a header row plus at least one data row"); return; }
+  const H = rows[0];
+  const iName  = colIndex(H,["name","node","node name"]);
+  const iParent= colIndex(H,["parent","parent name","reports to","manager"]);
+  const iLevel = colIndex(H,["level","type","tier"]);
+  const iCode  = colIndex(H,["code","id"]);
+  const iNotes = colIndex(H,["notes","note","description","remarks","location"]);
+  const iLead  = colIndex(H,["lead","head","person","manager name","owner"]);
+  const iTitle = colIndex(H,["title","lead title","role","rank","position"]);
+  if(iName<0){ toast('Add a "Name" column header so I know what to plot'); return; }
+  const cell=(row,i)=>i>=0?String(row[i]==null?"":row[i]).trim():"";
+  const map=new Map(), order=[];
+  for(let r=1;r<rows.length;r++){
+    const name=cell(rows[r],iName); if(!name) continue;
+    const node=N(name,"team",{code:cell(rows[r],iCode),notes:cell(rows[r],iNotes)});
+    const lead=cell(rows[r],iLead), title=cell(rows[r],iTitle);
+    if(lead||title) node.cmd={rank:title,name:lead,photo:""};
+    node._lvl=cell(rows[r],iLevel); node._parent=cell(rows[r],iParent);
+    if(!map.has(name)) map.set(name,node);
+    order.push(node);
+  }
+  if(!order.length){ toast("No named rows found"); return; }
+  const roots=[];
+  for(const node of order){
+    const p=node._parent;
+    if(p && map.has(p) && map.get(p)!==node) map.get(p).children.push(node);
+    else roots.push(node);
+  }
+  const top = roots.length===1 ? roots[0] : N((fallbackTitle||"Imported Organization").trim()||"Imported Organization","organization",{logo:"brand"},roots);
+  (function assign(n,depth){ n.type=levelToType(n._lvl,depth); delete n._lvl; delete n._parent; (n.children||[]).forEach(c=>assign(c,depth+1)); })(top,0);
+  adoptData(top, undefined, [], labels, layout);
+  toast("Imported "+order.length+" node"+(order.length===1?"":"s"));
+}
+$("#sheetFile").addEventListener("change", async e=>{
+  const f=e.target.files[0]; if(!f) return; e.target.value="";
+  try{
+    let rows;
+    if(/\.csv$/i.test(f.name)) rows = parseCSV(await f.text());
+    else { const XLSX = await loadXLSX(); const wb = XLSX.read(await f.arrayBuffer(),{type:"array"}); rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,blankrows:false,defval:""}); }
+    importRows(rows, f.name.replace(/\.[^.]+$/,""));
+  }catch(err){ console.error(err); toast(/\.csv$/i.test(f.name)?"Couldn't read that CSV":"Couldn't read that Excel file — for offline use, a CSV always works"); }
+});
+
+/* ================= RIGHT-CLICK CONTEXT MENU ================= */
+const ctxEl = $("#ctxMenu");
+function closeCtx(){ ctxEl.classList.remove("open"); }
+function openCtx(x, y, head, items){
+  ctxEl.innerHTML = "";
+  if(head){ const h=document.createElement("div"); h.className="ctx-head"; h.textContent=head; ctxEl.appendChild(h); }
+  items.forEach(it=>{
+    if(it==="-"){ const s=document.createElement("div"); s.className="sep"; ctxEl.appendChild(s); return; }
+    const b=document.createElement("button"); b.textContent=it.label; if(it.danger) b.className="danger";
+    b.onmousedown=e=>e.preventDefault();
+    b.onclick=()=>{ closeCtx(); it.fn(); };
+    ctxEl.appendChild(b);
+  });
+  ctxEl.classList.add("open");
+  const w=ctxEl.offsetWidth, h=ctxEl.offsetHeight;
+  ctxEl.style.left = Math.max(6, Math.min(x, innerWidth - w - 8)) + "px";
+  ctxEl.style.top  = Math.max(6, Math.min(y, innerHeight - h - 8)) + "px";
+}
+document.addEventListener("contextmenu", e=>{
+  if(e.target.closest("input,textarea,select,#topbar,.dpanel,.menu,#ctxMenu,#overlay,#levelsOverlay,#tplOverlay,#inkBar,#panelsBar")) return;
+  const nodeEl = e.target.closest(".node");
+  if(nodeEl){
+    const id = nodeEl.dataset.id, f = findNode(id); if(!f) return;
+    e.preventDefault();
+    const n = f.node, hasKids = (n.children||[]).length>0, isRoot = id===root.id;
+    const childT = TYPES[Math.min(TYPES.indexOf(n.type)+1, TYPES.length-1)];
+    const items = [
+      {label:"➕ Add "+TYPE_META[childT].label, fn:()=>openModal(null, id)},
+      {label:"✎ Edit", fn:()=>openModal(id)},
+      {label: panels.has(id)?"🗔 Close details":"🗔 Open details", fn:()=>toggleDetails(id)}
+    ];
+    if(hasKids) items.push({label: isOpen(n)?"▾ Collapse":"▸ Expand", fn:()=>toggle(id)});
+    if(!isRoot){ items.push("-"); items.push({label:"🔗 Reconnect to…", fn:()=>startConnect(id)}); items.push({label:"🗑 Delete", danger:true, fn:()=>askDelete(id)}); }
+    openCtx(e.clientX, e.clientY, n.name, items);
+  } else if(e.target.closest("#viewport")){
+    e.preventDefault();
+    openCtx(e.clientX, e.clientY, null, [
+      {label:"⤢ Fit to view", fn:()=>fitView()},
+      {label:"◎ Centre on root", fn:()=>centerOn(root.id)},
+      "-",
+      {label:"▦ Templates…", fn:()=>openTemplates()},
+      {label:"⊟ Switch layout", fn:()=>$("#layoutBtn").click()},
+      {label: showCmd?"👤 Hide people":"👤 Show people", fn:()=>$("#cmdBtn").click()},
+      {label:"✎ Whiteboard", fn:()=>$("#inkBtn").click()}
+    ]);
+  }
+});
+document.addEventListener("click", e=>{ if(!e.target.closest("#ctxMenu")) closeCtx(); });
+document.addEventListener("keydown", e=>{ if(e.key==="Escape") closeCtx(); });
+vpEl.addEventListener("pointerdown", closeCtx);
+
+/* ================= BOOT ================= */
+$("#brandLogo").src = LOGOS.brand;
+loadState();
+render();
+renderInk();
+fitView();
+if(view.s < 0.42){ view.s = 0.8; centerOn(root.id); }
+if(!store.persistent) setTimeout(()=>toast("Heads up: this browser is blocking saved data — use Export › Backup to keep changes"), 1200);
+addEventListener("resize", ()=>{ /* keep view; nothing forced */ });
+</script>
+</body>
+</html>

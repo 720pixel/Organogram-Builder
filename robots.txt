@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://orgbuilder.720p.red/sitemap.xml

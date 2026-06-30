@@ -1,0 +1,11 @@
+Name,Parent,Level,Code,Lead,Title,Notes
+Northwind Labs,,Organization,,Dana Ferreira,CEO,Remote-first
+Engineering,Northwind Labs,Division,ENG,Raj Anand,CTO,Builds the platform
+Product & Design,Northwind Labs,Division,PRD,Mara Lindqvist,CPO,Discovery to delivery
+Platform,Engineering,Department,ENG-PLAT,Tomás Ibáñez,VP Engineering,Infra & DX
+Applications,Engineering,Department,ENG-APP,Hana Müller,VP Engineering,Customer apps
+Infrastructure,Platform,Team,ENG-INF,,,Cloud & CI/CD
+Web Frontend,Applications,Team,ENG-WEB,,,
+Backend Services,Applications,Team,ENG-API,,,
+Product Management,Product & Design,Department,PM,Owen Bauer,Director,Roadmap
+Design,Product & Design,Department,DSGN,Selina Park,Director,Brand & product
