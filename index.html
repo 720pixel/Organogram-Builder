@@ -361,6 +361,7 @@ body.presenting #dock{opacity:0;pointer-events:none}
 #siteCredit{position:fixed;left:14px;bottom:12px;z-index:40;font-size:11px;font-weight:600;letter-spacing:.02em}
 #siteCredit a{color:var(--ink3);text-decoration:none;transition:color .15s}
 #siteCredit a:hover{color:var(--ink)}
+#siteCredit a+a{margin-left:12px}
 body.presenting #siteCredit,body.focusBoard #siteCredit{opacity:0;pointer-events:none}
 #presExit{position:fixed;top:14px;right:14px;z-index:120;display:none;padding:8px 15px;border-radius:99px;border:1px solid var(--glass-edge);
   background:var(--glass);backdrop-filter:blur(16px);color:var(--ink);font:600 12px var(--font-ui);cursor:pointer}
@@ -609,7 +610,7 @@ body.presenting #presExit{display:block}
   <span class="isep"></span>
   <button class="ibtn" id="inkDone" title="Put the pen down">✓ Done</button>
 </div>
-<footer id="siteCredit"><a href="https://720p.red/" rel="noopener">720p.red</a></footer>
+<footer id="siteCredit"><a href="https://720p.red/" rel="noopener">720p.red</a><a href="https://720p.red/blog/org-chart-from-excel-in-browser/" rel="noopener">How it was built</a></footer>
 <div id="toast"></div>
 <div id="ctxMenu"></div>
 <div id="printArea"></div>
