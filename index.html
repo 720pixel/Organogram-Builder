@@ -725,8 +725,8 @@ let layout = "td", labels = null;          // layout: td | bu | lr ; labels: cus
 function loadState(){
   const raw = store.get(SKEY);
   if(raw){ try{ const d = JSON.parse(raw); if(d && d.root){
-    root = d.root; collapsed = new Set(d.collapsed||[]); ink = d.ink||[];
-    labels = d.labels || null; layout = d.layout || "td";
+    root = cleanTree(d.root); collapsed = new Set(Array.isArray(d.collapsed) ? d.collapsed.filter(x=>typeof x==="string") : []); ink = cleanInk(d.ink);
+    labels = cleanLabels(d.labels); layout = typeof d.layout==="string" ? d.layout : "td";
     applyLabels(labels); migrate(); return;
   } }catch(e){} }
   root = defaultData();
@@ -735,6 +735,38 @@ function loadState(){
   forEach(root, n => { if(n.type==="department") collapsed.add(n.id); });   // start tidy: whole picture at a glance
 }
 function migrate(){ /* reserved for future schema upgrades */ }
+// Saved state, backups and linked files are untrusted: they can come from anyone.
+// Normalise them before anything renders so no field can carry markup.
+function cleanTree(r){
+  if(!r || typeof r!=="object") return defaultData();
+  forEach(r, n=>{
+    if(typeof n.id!=="string" || !/^[\w-]{1,40}$/.test(n.id)) n.id = uid();
+    if(!TYPES.includes(n.type)) n.type = "unit";
+    for(const k of ["name","code","notes"]) if(n[k]!=null && typeof n[k]!=="string") n[k] = String(n[k]);
+    if(n.logo!=null && !(typeof n.logo==="string" && (Object.prototype.hasOwnProperty.call(LOGOS,n.logo) || SAFE_IMG.test(n.logo)))) delete n.logo;
+    if(n.cmd!=null){
+      if(typeof n.cmd!=="object") delete n.cmd;
+      else {
+        for(const k of ["name","rank"]) if(n.cmd[k]!=null && typeof n.cmd[k]!=="string") n.cmd[k] = String(n.cmd[k]);
+        if(n.cmd.photo!=null && !(typeof n.cmd.photo==="string" && SAFE_IMG.test(n.cmd.photo))) delete n.cmd.photo;
+      }
+    }
+    if(n.children!=null) n.children = Array.isArray(n.children) ? n.children.filter(c=>c && typeof c==="object") : [];
+  });
+  return r;
+}
+function cleanInk(a){
+  if(!Array.isArray(a)) return [];
+  const num = v => Number.isFinite(+v);
+  return a.filter(s=>s && typeof s==="object" && INK_COLORS.includes(s.c) && num(s.w) && Array.isArray(s.p) && s.p.length>0 &&
+      s.p.every(pt=>Array.isArray(pt) && pt.length>=2 && num(pt[0]) && num(pt[1])))
+    .map(s=>({ ...s, t: typeof s.t==="string" ? s.t : "pen", w: +s.w, p: s.p.map(pt=>[+pt[0], +pt[1]]) }));
+}
+function cleanLabels(l){
+  if(!l || typeof l!=="object") return null;
+  const o = {}; for(const t of TYPES) if(typeof l[t]==="string" && l[t].trim()) o[t] = l[t].slice(0,28);
+  return Object.keys(o).length ? o : null;
+}
 let _saveT;
 function save(){
   clearTimeout(_saveT);
@@ -819,7 +851,8 @@ const $ = s => document.querySelector(s);
 const nodesEl = $("#nodes"), edgesEl = $("#edges"), worldEl = $("#world"), vpEl = $("#viewport");
 const domNodes = new Map();
 
-function logoSrc(n){ if(!n.logo) return null; return LOGOS[n.logo] || (n.logo.startsWith("data:") ? n.logo : null); }
+const SAFE_IMG = /^data:image\/(?:png|jpe?g|gif|webp);base64,[A-Za-z0-9+/=]+$/;
+function logoSrc(n){ if(!n.logo) return null; return LOGOS[n.logo] || (SAFE_IMG.test(n.logo) ? n.logo : null); }
 function initials(n){ const m=(n.name||"?").replace(/[^A-Za-z0-9 ]/g,"").trim().split(/\s+/); return (m[0]?.[0]||"?").toUpperCase()+(m[1]?.[0]||"").toUpperCase(); }
 
 function render(){
@@ -888,7 +921,7 @@ function render(){
     const showC = showCmd && n.cmd && (n.cmd.name || n.cmd.photo);
     if(showC){
       if(!cc){ cc = document.createElement("div"); cc.className = "cmd-card"; el.appendChild(cc); }
-      const av = n.cmd.photo ? `<img class="cmd-av" src="${n.cmd.photo}" alt="">`
+      const av = (n.cmd.photo && SAFE_IMG.test(n.cmd.photo)) ? `<img class="cmd-av" src="${n.cmd.photo}" alt="">`
         : `<div class="cmd-av ph">${(n.cmd.name||"?").trim().charAt(0).toUpperCase()}</div>`;
       cc.innerHTML = av + `<div><div class="cmd-rank">${esc(n.cmd.rank||"Lead")}</div><div class="cmd-name">${esc(n.cmd.name||"")}</div></div>`;
     } else if(cc) cc.remove();
@@ -975,7 +1008,7 @@ function fillPanel(el, id){
   const notesEl = el.querySelector(".dp-notes");
   notesEl.textContent = n.notes || ""; notesEl.style.display = n.notes ? "" : "none";
   const cnt = descCount(n);
-  el.querySelector(".dp-grid").innerHTML = TYPES.filter(k=>cnt[k]>0).map(k=>`<div class="dp-stat">${pluralLabel(k)}<b>${cnt[k]}</b></div>`).join("")
+  el.querySelector(".dp-grid").innerHTML = TYPES.filter(k=>cnt[k]>0).map(k=>`<div class="dp-stat">${esc(pluralLabel(k))}<b>${cnt[k]}</b></div>`).join("")
     || `<div class="dp-stat" style="grid-column:1/-1">No sub-nodes yet — use ＋ Add to build below this one</div>`;
   const childT = TYPES[Math.min(TYPES.indexOf(n.type)+1, TYPES.length-1)];
   el.querySelector(".dp-add").textContent = "＋ Add "+TYPE_META[childT].label;
@@ -1544,14 +1577,14 @@ function doSearch(q){
   searchHits = new Set();
   hits.forEach(h=>pathOf(h.id).forEach(p=>searchHits.add(p.id)));
   render();
-  if(!hits.length){ resultsEl.innerHTML = `<div class="r-empty">No units match “${q}”. Try a code or part of a name.</div>`; }
+  if(!hits.length){ resultsEl.innerHTML = `<div class="r-empty">No units match “${esc(q)}”. Try a code or part of a name.</div>`; }
   else {
     resultsEl.innerHTML = hits.slice(0,40).map(h=>{
       const crumbs = pathOf(h.id).slice(0,-1).map(p=>p.name).slice(-2).join(" › ");
-      return `<div class="r-item" data-id="${h.id}">
+      return `<div class="r-item" data-id="${esc(h.id)}">
         <span class="r-dot" style="background:${TYPE_META[h.type].hex}"></span>
-        <span class="r-name">${h.code?`<b>${h.code}</b> `:""}${h.name} <small>· ${crumbs}</small></span>
-        <span class="r-type">${TYPE_META[h.type].label}</span></div>`;
+        <span class="r-name">${h.code?`<b>${esc(h.code)}</b> `:""}${esc(h.name)} <small>· ${esc(crumbs)}</small></span>
+        <span class="r-type">${esc(TYPE_META[h.type].label)}</span></div>`;
     }).join("");
     resIds = hits.slice(0,40).map(h=>h.id);
     resultsEl.querySelectorAll(".r-item").forEach(it=>it.onclick=()=>gotoNode(it.dataset.id));
@@ -1604,21 +1637,22 @@ function download(blob, filename){
   const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=filename;
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),3000);
 }
-const esc = s => String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const esc = s => String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
 function exportExcel(){
   const rows = flatRows();
+  const T = "mso-number-format:'\\@'"; // every text cell stays text, so "=..." is never a formula
   const head = ["Depth","Level","Code","Name","Lead","Parent","Full path","Notes"];
   const html = `<html xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="UTF-8">
     <style>td,th{border:.5pt solid #999;padding:3pt 6pt;font:10pt Calibri}th{background:#1F2A44;color:#fff;font-weight:bold}</style></head><body>
     <table><tr>${head.map(h=>`<th>${h}</th>`).join("")}</tr>
-    ${rows.map(r=>`<tr><td>${r.depth}</td><td>${esc(r.type)}</td><td style="mso-number-format:'\\@'">${esc(r.code)}</td><td>${"&nbsp;&nbsp;".repeat(r.depth)}${esc(r.name)}</td><td>${esc(r.cmd)}</td><td>${esc(r.parent)}</td><td>${esc(r.path)}</td><td>${esc(r.notes)}</td></tr>`).join("")}
+    ${rows.map(r=>`<tr><td>${r.depth}</td><td style="${T}">${esc(r.type)}</td><td style="${T}">${esc(r.code)}</td><td style="${T}">${"&nbsp;&nbsp;".repeat(r.depth)}${esc(r.name)}</td><td style="${T}">${esc(r.cmd)}</td><td style="${T}">${esc(r.parent)}</td><td style="${T}">${esc(r.path)}</td><td style="${T}">${esc(r.notes)}</td></tr>`).join("")}
     </table></body></html>`;
   download(new Blob(["\ufeff",html],{type:"application/vnd.ms-excel"}), "organogram.xls");
   toast("Exported Excel workbook");
 }
 function exportCSV(){
   const rows = flatRows();
-  const q = s=>`"${String(s??"").replace(/"/g,'""')}"`;
+  const q = s=>{ let v = String(s??""); if(/^[=+\-@\t\r]/.test(v)) v = "'"+v; return `"${v.replace(/"/g,'""')}"`; };
   const csv = "Depth,Level,Code,Name,Lead,Parent,Full path,Notes\n" +
     rows.map(r=>[r.depth,r.type,r.code,r.name,r.cmd,r.parent,r.path,r.notes].map(q).join(",")).join("\n");
   download(new Blob(["\ufeff",csv],{type:"text/csv;charset=utf-8"}), "organogram.csv");
@@ -1899,7 +1933,7 @@ function exportPPTX(){
 
 /* ================= PRINT ================= */
 $("#printBtn").onclick = ()=>{
-  const ul = n => `<li><span class="pt">${TYPE_META[n.type]?.label||n.type}</span>${n.code?`<span class="pc">${esc(n.code)}</span>`:""}<b>${esc(n.name)}</b>${(n.cmd&&n.cmd.name)?` · Comd: ${esc((n.cmd.rank?n.cmd.rank+" ":"")+n.cmd.name)}`:""}${n.notes?` — <i>${esc(n.notes)}</i>`:""}
+  const ul = n => `<li><span class="pt">${esc(TYPE_META[n.type]?.label||n.type)}</span>${n.code?`<span class="pc">${esc(n.code)}</span>`:""}<b>${esc(n.name)}</b>${(n.cmd&&n.cmd.name)?` · Comd: ${esc((n.cmd.rank?n.cmd.rank+" ":"")+n.cmd.name)}`:""}${n.notes?` — <i>${esc(n.notes)}</i>`:""}
     ${(n.children&&n.children.length)?`<ul>${n.children.map(ul).join("")}</ul>`:""}</li>`;
   $("#printArea").innerHTML = `<h1>${esc(root.name)}</h1>
     <div class="psub">Organization chart · printed ${new Date().toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"})}</div>
@@ -1970,7 +2004,10 @@ function scheduleFileWrite(){
   }, 800);
 }
 function adoptData(r, col, inkArr, lbls, lay){
-  forEach(r, n=>{ if(!n.id) n.id = uid(); });
+  r = cleanTree(r); inkArr = cleanInk(inkArr);
+  if(lbls!==undefined) lbls = cleanLabels(lbls);
+  if(lay!==undefined && typeof lay!=="string") lay = undefined;
+  if(col!=null) col = Array.isArray(col) ? col.filter(x=>typeof x==="string") : undefined;
   root = r;
   ink = inkArr || []; renderInk();
   if(lbls!==undefined){ labels = lbls || null; applyLabels(labels); }
